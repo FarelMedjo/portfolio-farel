@@ -116,7 +116,7 @@ export const projets: Projet[] = [
     statut: "En cours",
     domaine: "securite",
     resume:
-      "Thème de mon mémoire de niveau 4 : une plateforme d'évaluation en ligne pour les concours blancs, conçue autour de l'intégrité des épreuves et de la prévention de la fraude.",
+      "Thème de mon mémoire de niveau 5 : une plateforme d'évaluation en ligne pour les concours blancs, conçue autour de l'intégrité des épreuves et de la prévention de la fraude.",
     technologies: ["Sécurité applicative", "Intégrité des épreuves", "Anti-fraude"],
   },
   {
@@ -156,7 +156,7 @@ export const projets: Projet[] = [
 /* ------------------------------------------------------------------ */
 
 export const chiffres = [
-  { valeur: "4e", libelle: "année d'ingénieur à l'ENSPY" },
+  { valeur: "5e", libelle: "année d'ingénieur à l'ENSPY" },
   { valeur: String(projets.length), libelle: "projets en sécurité et en développement" },
   { valeur: "39", libelle: "pages pour le rapport d'investigation" },
   { valeur: "CEH", libelle: "v13, certification préparée" },
@@ -195,14 +195,14 @@ export const services = [
 
 export const parcours = [
   {
-    periode: "2025 – 2026",
-    titre: "Élève ingénieur en 4e année, Cybersécurité et Investigation Numérique",
+    periode: "2026 – 2027",
+    titre: "Élève ingénieur en 5e année, Cybersécurité et Investigation Numérique",
     lieu: "École Nationale Supérieure Polytechnique de Yaoundé (ENSPY)",
     texte:
       "Formation d'ingénieur : investigation numérique, hacking éthique, gestion des risques, réseaux, cryptographie et urbanisation des systèmes d'information.",
   },
   {
-    periode: "Niveau 4",
+    periode: "Niveau 5",
     titre: "Stage académique à la cellule informatique",
     lieu: "ICORP",
     texte:
@@ -295,7 +295,7 @@ export const audiences: Record<
     titre:
       "Étudiant ingénieur en cybersécurité, à la recherche d'un stage de fin de formation.",
     texte:
-      "Je suis en quatrième année à l'École Nationale Supérieure Polytechnique de Yaoundé, filière Cybersécurité et Investigation Numérique. Je recherche un stage dans le secteur bancaire, les télécommunications ou l'administration publique, où je pourrai mettre en pratique l'analyse de risques, l'investigation numérique et la sécurisation d'applications.",
+      "Je suis en cinquième année à l'École Nationale Supérieure Polytechnique de Yaoundé, filière Cybersécurité et Investigation Numérique. Je recherche un stage dans le secteur bancaire, les télécommunications ou l'administration publique, où je pourrai mettre en pratique l'analyse de risques, l'investigation numérique et la sécurisation d'applications.",
     cta: { libelle: "Proposer un stage", href: mailto("Proposition de stage") },
     introProjets:
       "Travaux menés pendant ma formation et dans mes projets personnels, classés par pertinence pour un poste en sécurité.",
@@ -335,11 +335,11 @@ export const audiences: Record<
   },
   academique: {
     libelle: "Jury académique",
-    disponibilite: "Élève ingénieur en 4e année à l'ENSPY",
+    disponibilite: "Élève ingénieur en 5e année à l'ENSPY",
     titre:
       "Un parcours d'ingénieur centré sur la sécurité, les réseaux et les systèmes d'information.",
     texte:
-      "Je suis en quatrième année de formation d'ingénieur à l'ENSPY, filière Cybersécurité et Investigation Numérique. Ce portfolio rassemble mes travaux pratiques, mes rapports techniques et mes projets de développement, ainsi que mon activité d'enseignement en classe préparatoire aux concours.",
+      "Je suis en cinquième année de formation d'ingénieur à l'ENSPY, filière Cybersécurité et Investigation Numérique. Ce portfolio rassemble mes travaux pratiques, mes rapports techniques et mes projets de développement, ainsi que mon activité d'enseignement en classe préparatoire aux concours.",
     cta: { libelle: "Consulter le parcours", href: "#parcours" },
     introProjets:
       "Travaux pratiques, rapports techniques et projets de développement, classés du plus académique au plus appliqué.",
