@@ -605,6 +605,8 @@ export const competences = [
       "Autopsy",
       "EBIOS Risk Manager",
       "Cryptographie (RSA, PKI, ECC)",
+      "Investigation numérique forensique",
+      "Hacking éthique (CEH v13)",
     ],
   },
   {
@@ -616,6 +618,9 @@ export const competences = [
       "VLAN",
       "EtherChannel (LACP, PAgP)",
       "EVE-NG",
+      "MPLS-VPN",
+      "Pare-feu FortiGate",
+      "Architecture réseau hiérarchique (4 niveaux)",
     ],
   },
   {
