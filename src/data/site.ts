@@ -634,11 +634,24 @@ export const competences = [
       "Flutter",
       "Supabase",
       "Cloudflare Workers et D1",
+      "Next.js",
+      "SQL et PostgreSQL",
     ],
   },
   {
     domaine: "Conception et rédaction",
-    elements: ["Figma", "LaTeX", "Documents Word et PDF", "Présentations Beamer et PowerPoint"],
+    elements: [
+      "Figma",
+      "LaTeX",
+      "Documents Word et PDF",
+      "Présentations Beamer et PowerPoint",
+      "Conception logicielle (règles métier, modélisation)",
+      "Architecture multi-tenant",
+      "Contrôle d'accès et journal d'audit (RBAC, RLS)",
+      "Documentation technique (DAT, DEX, DTA)",
+      "Microsoft Visio",
+      "Systèmes de design",
+    ],
   },
 ];
 
