@@ -345,6 +345,74 @@ export const projets: Projet[] = [
     ],
     github: "https://github.com/FarelMedjo/Mouvement-Kamerun",
   },
+  {
+    id: "conseil-visibilite-numerique",
+    titre: "Conseil en visibilité numérique pour une entreprise de formation immobilière",
+    categorie: "Mission de conseil, client anonymisé",
+    statut: "En cours",
+    role: "Consultant digital",
+    domaine: "missions",
+    // Nom du client : laissé vide, à renseigner seulement avec son accord.
+    clientName: "",
+    resume:
+      "Mission de conseil en visibilité numérique pour une entreprise américaine de formation immobilière : analytique, référencement, contenus et lancement d'un blog.",
+    technologies: [
+      "GA4",
+      "Google Search Console",
+      "Bing Webmaster Tools",
+      "IndexNow",
+      "SEO",
+      "Wix",
+      "LaTeX",
+    ],
+    description: [
+      "Mission de conseil en visibilité numérique pour une entreprise américaine de formation immobilière. Elle porte sur la mesure d'audience, le référencement naturel, les contenus et les appels à l'action du site.",
+      "Le premier sprint a donné lieu à deux livrables : un rapport LaTeX de 16 pages et une présentation de 19 diapositives.",
+    ],
+    pointsCles: [
+      "Mise en place et vérification de l'analytique : GA4, Google Search Console, Bing Webmaster Tools et IndexNow",
+      "Optimisation SEO : levée d'un blocage d'indexation, sitemap, balises titre et méta, image de partage",
+      "Correction des appels à l'action",
+      "Création d'un lead magnet PDF, avec automatisation de sa livraison sur Wix",
+      "Lancement d'un blog (premiers articles publiés) et correction de contenus",
+      "Rapport LaTeX de 16 pages et présentation de 19 diapositives",
+    ],
+  },
+  {
+    id: "audit-sites-enseignement-superieur",
+    titre: "Audit et modernisation de sites web d'établissements d'enseignement supérieur",
+    categorie: "Audit de sites web, Cameroun",
+    statut: "En cours",
+    domaine: "missions",
+    resume:
+      "Diagnostics techniques et audits détaillés de sites web d'établissements d'enseignement supérieur privés au Cameroun, restitués par des présentations destinées aux clients.",
+    technologies: ["Audit technique", "Sites web", "Présentations client"],
+    description: [
+      "Mission d'audit et de modernisation de sites web d'établissements d'enseignement supérieur privés au Cameroun.",
+    ],
+    pointsCles: [
+      "Diagnostics techniques de sites",
+      "Audit détaillé",
+      "Présentations client, dont une de 14 diapositives",
+      "Rédaction de messages de démarchage",
+    ],
+  },
+  {
+    id: "albedo-studio",
+    titre: "Albedo Studio, agence de services digitaux",
+    categorie: "Agence de services digitaux",
+    statut: "En lancement",
+    domaine: "missions",
+    resume:
+      "Agence de services digitaux : sites web, marketing digital, affiches, portfolios, gestion de pages sur les réseaux sociaux, création et montage vidéo, développement web et mobile.",
+    technologies: [
+      "Sites web",
+      "Marketing digital",
+      "Réseaux sociaux",
+      "Montage vidéo",
+      "Développement web et mobile",
+    ],
+  },
 ];
 
 /* Projets effectivement publiés (les entrées avec visible: false sont écartées). */
