@@ -214,11 +214,14 @@ export const projets: Projet[] = [
       "TypeScript",
       "Supabase",
       "Laravel",
+      "PHP",
+      "MySQL",
     ],
     description: [
       "Application de gestion scolaire pensée pour le contexte camerounais et la zone CEMAC : modules par profil d'utilisateur, contrôle d'accès par rôle et schémas SQL complets. Le projet est aussi désigné sous les noms BrixSchool, EduBrix et Alanya School Manager. La première version prévoit la supervision des enseignants et des présences des élèves, les notes et bulletins, ainsi que les finances (encaissements en espèces et suivi des impayés).",
       "L'architecture est conçue sur la pile Cloudflare (Workers, D1, KV), avec un modèle multi-tenant « silo » : une base de données par établissement et un plan de contrôle partagé.",
       "Le projet reprend de zéro des versions antérieures, réalisées avec Laravel, puis avec Lovable, puis avec React et Supabase, en conservant les règles métier validées. Les travaux de conception (cadrage, acteurs et parcours, règles métier) sont terminés ; le design puis le code suivent.",
+      "La version Laravel est HN-School, une application web de gestion d'école couvrant la crèche, la maternelle et le primaire (sections anglophone, francophone et bilingue). Elle gère les élèves, les parents, les enseignants, les classes, les paiements et scolarités, les évaluations, les présences, les bulletins, l'emploi du temps et la messagerie. Six rôles y disposent chacun d'un espace isolé : administration, scolarité, finance, enseignant, parent et élève.",
     ],
     pointsCles: [
       "Deux sous-systèmes couverts : francophone et anglophone",
@@ -227,6 +230,15 @@ export const projets: Projet[] = [
       "Journal d'audit en ajout seul, avec détection d'altération par somme de contrôle",
       "Codes de niveaux canoniques associés à des libellés bilingues",
       "Conception terminée : cadrage, acteurs et parcours, règles métier",
+      "Version Laravel antérieure (HN-School) : six rôles et espaces isolés, gérés avec Spatie Laravel Permission",
+      "Version Laravel antérieure : notation adaptée à la section (barème francophone ou anglophone) et bulletins imprimables depuis le navigateur",
+      "Version Laravel antérieure : emploi du temps interactif, bibliothèque et vie scolaire",
+    ],
+    liens: [
+      {
+        libelle: "Version Laravel (HN-School) sur GitHub",
+        url: "https://github.com/FarelMedjo/HN-school",
+      },
     ],
   },
   {
@@ -275,36 +287,6 @@ export const projets: Projet[] = [
       "Plateforme permettant de trouver et de réserver, à proximité immédiate du point de départ (à pied), le véhicule et/ou le conducteur nécessaire à un déplacement.",
       "Le projet est au stade de concept.",
     ],
-  },
-  {
-    id: "hn-school",
-    titre: "HN-School, gestion d'une école primaire",
-    categorie: "Application de gestion scolaire",
-    statut: "En cours",
-    domaine: "developpement",
-    resume:
-      "Application web Laravel de gestion d'une école primaire : élèves, enseignants, parents, paiements, évaluations, présences et bulletins, avec un espace distinct pour chaque rôle.",
-    technologies: [
-      "Laravel",
-      "PHP",
-      "Blade",
-      "MySQL",
-      "Tailwind CSS",
-      "Alpine.js",
-      "Spatie Permission",
-    ],
-    description: [
-      "Application web Laravel de gestion d'école, couvrant la crèche, la maternelle et le primaire (sections anglophone, francophone et bilingue). Elle gère les élèves, les parents, les enseignants, les classes, les paiements et scolarités, les évaluations, les présences, les bulletins, l'emploi du temps et la messagerie.",
-      "Six rôles disposent chacun d'un espace isolé : administration, scolarité, finance, enseignant, parent et élève. Parmi les évolutions restantes figurent les bulletins avec cachet ou signature numérique ainsi que des rapports et statistiques consolidés.",
-    ],
-    pointsCles: [
-      "Six rôles et espaces isolés, gérés avec Spatie Laravel Permission",
-      "Notation adaptée à la section : barème francophone ou anglophone",
-      "Bulletins imprimables depuis le navigateur",
-      "Emploi du temps interactif, bibliothèque et vie scolaire",
-      "Manuel utilisateur disponible dans le dépôt",
-    ],
-    github: "https://github.com/FarelMedjo/HN-school",
   },
   {
     id: "maquette-medicale",
@@ -675,7 +657,6 @@ export const audiences: Record<
       "transmission-fichiers-securisee",
       "automates-operations",
       "brixschool",
-      "hn-school",
       "tutorlab",
       "near2ride",
       "maquette-medicale",
@@ -700,7 +681,6 @@ export const audiences: Record<
     ordreSections: ["services", "projets", "parcours", "competences", "contact"],
     ordreProjets: [
       "brixschool",
-      "hn-school",
       "tutorlab",
       "albedo-studio",
       "conseil-visibilite-numerique",
@@ -744,7 +724,6 @@ export const audiences: Record<
       "style-cours-latex",
       "beamer-brix-studio",
       "brixschool",
-      "hn-school",
       "tutorlab",
       "near2ride",
       "maquette-medicale",
