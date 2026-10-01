@@ -49,23 +49,50 @@ export const libellesSections: Record<SectionId, string> = {
 /* Projets                                                             */
 /* ------------------------------------------------------------------ */
 
-export type Domaine = "securite" | "developpement";
+export type Domaine = "securite" | "developpement" | "missions" | "ressources";
 
 export const libellesDomaines: Record<Domaine | "tous", string> = {
   tous: "Tous",
   securite: "Sécurité et réseaux",
   developpement: "Développement",
+  missions: "Missions et freelance",
+  ressources: "Enseignement et autres réalisations",
 };
 
+/* Capture d'écran : déposez le fichier dans public/projects/<id>/ puis
+   indiquez son chemin, par exemple "/projects/<id>/accueil.png". */
+export type ImageProjet = { src: string; alt: string };
+
+export type LienProjet = { libelle: string; url: string };
+
 export type Projet = {
+  /* Identifiant stable, utilisé aussi comme slug et comme nom du dossier
+     public/projects/<id>/. */
   id: string;
   titre: string;
   categorie: string;
-  statut: string;
+  /* Concept, En conception, En cours, En lancement, Projet académique, Terminé… */
+  statut?: string;
   domaine: Domaine;
   resume: string;
   technologies: string[];
   lien?: string;
+  /* Champs optionnels : rien ne s'affiche tant qu'ils sont vides. */
+  role?: string;
+  /* Un élément par paragraphe. */
+  description?: string[];
+  pointsCles?: string[];
+  periode?: string;
+  /* Nom du client, à renseigner uniquement avec son accord. Vide par défaut. */
+  clientName?: string;
+  /* Précision d'origine ou de contexte, par exemple pour un fork. */
+  mention?: string;
+  github?: string;
+  demo?: string;
+  liens?: LienProjet[];
+  images?: ImageProjet[];
+  /* false : l'entrée est conservée dans ce fichier mais n'est pas publiée. */
+  visible?: boolean;
 };
 
 export const projets: Projet[] = [
@@ -151,13 +178,16 @@ export const projets: Projet[] = [
   },
 ];
 
+/* Projets effectivement publiés (les entrées avec visible: false sont écartées). */
+export const projetsVisibles = projets.filter((p) => p.visible !== false);
+
 /* ------------------------------------------------------------------ */
 /* Chiffres clés affichés sous l'accueil                               */
 /* ------------------------------------------------------------------ */
 
 export const chiffres = [
   { valeur: "5e", libelle: "année d'ingénieur à l'ENSPY" },
-  { valeur: String(projets.length), libelle: "projets en sécurité et en développement" },
+  { valeur: String(projetsVisibles.length), libelle: "projets et réalisations" },
   { valeur: "39", libelle: "pages pour le rapport d'investigation" },
   { valeur: "CEH", libelle: "v13, certification préparée" },
 ];

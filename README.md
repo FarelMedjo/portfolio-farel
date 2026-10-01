@@ -23,6 +23,10 @@ Tout le contenu se trouve dans un seul fichier : src/data/site.ts. Vous y modifi
 
 Pour ajouter un projet, ajoutez un objet au tableau projets, puis ajoutez son identifiant dans la liste ordreProjets de chaque public.
 
+Champs facultatifs d'un projet (rien ne s'affiche tant qu'ils sont vides) : statut, role, description (un élément par paragraphe), pointsCles, periode, clientName, mention, github, demo, lien, liens (liste de { libelle, url }), images (liste de { src, alt }) et visible. Avec visible: false, l'entrée reste dans le fichier mais n'est pas publiée.
+
+Captures d'écran : déposez les fichiers dans public/projects/<id du projet>/, puis référencez-les dans le champ images, par exemple { src: "/projects/tutorlab/accueil.png", alt: "Page d'accueil de TutorLab" }.
+
 ## Liens adaptés à chaque public
 
 Le site lit le paramètre profil dans l'adresse. Vous pouvez donc envoyer un lien différent selon le destinataire :
