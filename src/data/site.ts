@@ -413,6 +413,56 @@ export const projets: Projet[] = [
       "Développement web et mobile",
     ],
   },
+  {
+    id: "automates-operations",
+    titre: "Opérations sur les automates finis",
+    categorie: "Travaux pratiques INF3421",
+    statut: "Projet académique",
+    domaine: "developpement",
+    resume:
+      "Bibliothèque Python et interface en ligne de commande implémentant les opérations classiques sur les automates finis (AFD, AFN et ε-AFN) et les expressions régulières.",
+    technologies: ["Python", "pytest", "Automates finis", "Expressions régulières", "Graphviz"],
+    description: [
+      "Travaux pratiques INF3421 : une bibliothèque Python, accompagnée d'une interface interactive en ligne de commande, qui implémente les opérations classiques sur les automates finis déterministes, non déterministes et à transitions ε. Elle n'utilise que la bibliothèque standard de Python ; Graphviz est facultatif et sert à exporter les automates en images.",
+      "Les automates se chargent depuis des fichiers JSON ou se saisissent à la main, et les résultats s'affichent sous forme de tables de transitions.",
+    ],
+    pointsCles: [
+      "Constructions de Thompson et de Glushkov, à partir d'une expression régulière",
+      "Déterminisation, complétion, émondage et minimisation (algorithme de Moore)",
+      "Union, intersection, complément, concaténation, étoile et différence",
+      "Extraction d'une expression régulière par élimination d'états, et résolution de systèmes d'équations (lemme d'Arden)",
+      "Suite de tests automatisés avec pytest",
+    ],
+    github: "https://github.com/FarelMedjo/AUTOMATES",
+  },
+  {
+    id: "cours-investigation-numerique",
+    titre: "Travaux du cours Théories et pratiques de l'investigation numérique",
+    categorie: "Travaux de cours, investigation numérique",
+    statut: "Projet académique",
+    domaine: "securite",
+    resume:
+      "Travaux rendus dans le cadre d'un cours d'investigation numérique : notes d'exposés, résumé de synthèse, travaux à rendre, rapport d'expertise et rapport de laboratoire.",
+    mention:
+      "Fork du dépôt de cours MaletYon/SEC4052 : le cours et ses supports sont l'œuvre de l'auteur d'origine, les travaux rendus sont ceux de Farel M.",
+    technologies: [
+      "Investigation numérique",
+      "LaTeX",
+      "Entropie de Shannon",
+      "Cryptographie post-quantique",
+    ],
+    description: [
+      "Dépôt des travaux rendus dans un cours d'investigation numérique, rédigés en LaTeX. Les exposés abordent notamment l'utilité de l'investigation numérique en police judiciaire, la reconnaissance faciale et les deepfakes ; les travaux à rendre mêlent réflexion épistémologique et calculs, dont celui de l'entropie de Shannon.",
+    ],
+    pointsCles: [
+      "Notes d'exposés",
+      "Résumé de synthèse du cours",
+      "Deux travaux à rendre (TAF N1 et N2)",
+      "Rapport d'expertise sur une étude de cas judiciaire",
+      "Rapport de laboratoire (laboratoire 5)",
+    ],
+    github: "https://github.com/FarelMedjo/Forensic",
+  },
 ];
 
 /* Projets effectivement publiés (les entrées avec visible: false sont écartées). */
