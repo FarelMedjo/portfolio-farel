@@ -198,7 +198,7 @@ export const projets: Projet[] = [
   {
     id: "brixschool",
     titre: "EDUBRIX, gestion d'établissements scolaires",
-    categorie: "Brix Studio",
+    categorie: "ALBEDO Studio",
     statut: "En conception",
     role: "Fondateur unique",
     domaine: "developpement",
@@ -565,7 +565,7 @@ export const parcours = [
   {
     periode: "En cours",
     titre: "Développement web indépendant",
-    lieu: "Brix Studio",
+    lieu: "ALBEDO Studio",
     texte:
       "Sites institutionnels, audits techniques et applications de gestion pour des établissements d'enseignement au Cameroun.",
   },

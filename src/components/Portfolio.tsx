@@ -526,9 +526,9 @@ export default function Portfolio({ initial }: { initial: Audience }) {
                 {"\n\n"}
                 <span className="t-invite">$</span> cat profil.txt{"\n"}
                 <span className="t-cle">école    </span> ENSPY, Yaoundé{"\n"}
-                <span className="t-cle">filière  </span> Cybersécurité{"\n"}
-                <span className="t-cle">niveau   </span> 4e année{"\n"}
-                <span className="t-cle">studio   </span> Brix Studio{"\n\n"}
+                <span className="t-cle">filière  </span> Cybersécurité et investigation numérique{"\n"}
+                <span className="t-cle">niveau   </span> 5e année{"\n"}
+                <span className="t-cle">studio   </span> ALBEDO Studio{"\n\n"}
                 <span className="t-invite">$</span> <span className="curseur" />
               </pre>
             </div>
