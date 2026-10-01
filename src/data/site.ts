@@ -276,6 +276,75 @@ export const projets: Projet[] = [
       "Le projet est au stade de concept.",
     ],
   },
+  {
+    id: "hn-school",
+    titre: "HN-School, gestion d'une école primaire",
+    categorie: "Application de gestion scolaire",
+    statut: "En cours",
+    domaine: "developpement",
+    resume:
+      "Application web Laravel de gestion d'une école primaire : élèves, enseignants, parents, paiements, évaluations, présences et bulletins, avec un espace distinct pour chaque rôle.",
+    technologies: [
+      "Laravel",
+      "PHP",
+      "Blade",
+      "MySQL",
+      "Tailwind CSS",
+      "Alpine.js",
+      "Spatie Permission",
+    ],
+    description: [
+      "Application web Laravel de gestion d'école, couvrant la crèche, la maternelle et le primaire (sections anglophone, francophone et bilingue). Elle gère les élèves, les parents, les enseignants, les classes, les paiements et scolarités, les évaluations, les présences, les bulletins, l'emploi du temps et la messagerie.",
+      "Six rôles disposent chacun d'un espace isolé : administration, scolarité, finance, enseignant, parent et élève. Parmi les évolutions restantes figurent les bulletins avec cachet ou signature numérique ainsi que des rapports et statistiques consolidés.",
+    ],
+    pointsCles: [
+      "Six rôles et espaces isolés, gérés avec Spatie Laravel Permission",
+      "Notation adaptée à la section : barème francophone ou anglophone",
+      "Bulletins imprimables depuis le navigateur",
+      "Emploi du temps interactif, bibliothèque et vie scolaire",
+      "Manuel utilisateur disponible dans le dépôt",
+    ],
+    github: "https://github.com/FarelMedjo/HN-school",
+  },
+  {
+    id: "maquette-medicale",
+    titre: "Maquette d'application médicale",
+    categorie: "Maquette d'interface",
+    statut: "Projet de conception",
+    domaine: "developpement",
+    resume: "Maquette d'application médicale réalisée sous Figma et Flutter.",
+    technologies: ["Figma", "Flutter"],
+  },
+  {
+    // Masquée : à publier seulement sur décision de Farel (visible: true).
+    id: "transmission-fichiers-securisee",
+    titre: "Transmission sécurisée de fichiers pour scrutateurs",
+    categorie: "Plateforme web sécurisée",
+    statut: "En cours",
+    domaine: "securite",
+    visible: false,
+    resume:
+      "Fondations d'un système de transmission sécurisée de fichiers : site institutionnel, schéma PostgreSQL sur Supabase, sécurité par ligne (RLS) et stockage privé.",
+    technologies: [
+      "Supabase",
+      "PostgreSQL",
+      "RLS",
+      "Stockage privé",
+      "React",
+      "Vite",
+      "Tailwind CSS",
+    ],
+    description: [
+      "Les fondations du système sont posées : un site institutionnel bilingue (français et anglais), un schéma PostgreSQL sur Supabase, la sécurité au niveau des lignes (RLS) et un stockage privé.",
+      "Les fichiers déposés sont conservés dans un espace privé. Ils ne sont accessibles qu'à leur propriétaire et aux administrateurs, et se téléchargent par des liens signés temporaires.",
+    ],
+    pointsCles: [
+      "Contrôle d'accès appliqué côté serveur par la sécurité par ligne (RLS)",
+      "Stockage privé, sans URL publique",
+      "Liens de téléchargement signés et temporaires",
+    ],
+    github: "https://github.com/FarelMedjo/Mouvement-Kamerun",
+  },
 ];
 
 /* Projets effectivement publiés (les entrées avec visible: false sont écartées). */
