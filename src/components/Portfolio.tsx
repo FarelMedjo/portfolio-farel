@@ -1,23 +1,130 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   audiences,
+  chiffres,
   competences,
   identite,
+  libellesDomaines,
   libellesSections,
   parcours,
   projets,
   services,
   type Audience,
+  type Domaine,
   type Projet,
   type SectionId,
 } from "@/data/site";
 
 const listeAudiences = Object.keys(audiences) as Audience[];
+const filtres = Object.keys(libellesDomaines) as (Domaine | "tous")[];
+
+/* Couleur du badge de statut selon l'avancement du projet. */
+function tonStatut(statut: string) {
+  if (statut === "Terminé") return "ok";
+  if (statut === "Concept") return "neutre";
+  return "encours";
+}
+
+/* Fait apparaître les éléments .apparait lorsqu'ils entrent dans l'écran. */
+function useApparition(dep: unknown) {
+  useEffect(() => {
+    const elements = document.querySelectorAll(".apparait:not(.visible)");
+    if (!("IntersectionObserver" in window)) {
+      elements.forEach((e) => e.classList.add("visible"));
+      return;
+    }
+    const obs = new IntersectionObserver(
+      (entrees) => {
+        entrees.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.classList.add("visible");
+            obs.unobserve(e.target);
+          }
+        });
+      },
+      { rootMargin: "0px 0px -8% 0px" }
+    );
+    elements.forEach((e) => obs.observe(e));
+    return () => obs.disconnect();
+  }, [dep]);
+}
+
+/* Section visible, pour surligner le lien correspondant du menu. */
+function useSectionActive(ids: string[]) {
+  const [active, setActive] = useState<string>("");
+  useEffect(() => {
+    const obs = new IntersectionObserver(
+      (entrees) => {
+        entrees.forEach((e) => {
+          if (e.isIntersecting) setActive(e.target.id);
+        });
+      },
+      { rootMargin: "-45% 0px -50% 0px" }
+    );
+    ids.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) obs.observe(el);
+    });
+    // En bas de page, la dernière section n'atteint pas toujours le milieu de l'écran.
+    const enBas = () => {
+      const h = document.documentElement;
+      if (h.scrollTop + h.clientHeight >= h.scrollHeight - 4) {
+        setActive(ids[ids.length - 1]);
+      }
+    };
+    window.addEventListener("scroll", enBas, { passive: true });
+    return () => {
+      obs.disconnect();
+      window.removeEventListener("scroll", enBas);
+    };
+  }, [ids]);
+  return active;
+}
+
+function BoutonTheme() {
+  const [sombre, setSombre] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    setSombre(document.documentElement.dataset.theme === "dark");
+  }, []);
+
+  function basculer() {
+    const suivant = !sombre;
+    setSombre(suivant);
+    document.documentElement.dataset.theme = suivant ? "dark" : "light";
+    try {
+      localStorage.setItem("theme", suivant ? "dark" : "light");
+    } catch {}
+  }
+
+  return (
+    <button
+      type="button"
+      className="theme"
+      onClick={basculer}
+      aria-label={sombre ? "Passer au thème clair" : "Passer au thème sombre"}
+      title={sombre ? "Thème clair" : "Thème sombre"}
+    >
+      {sombre ? (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="4.5" />
+          <path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8" />
+        </svg>
+      ) : (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11Z" />
+        </svg>
+      )}
+    </button>
+  );
+}
 
 export default function Portfolio({ initial }: { initial: Audience }) {
   const [audience, setAudience] = useState<Audience>(initial);
+  const [filtre, setFiltre] = useState<Domaine | "tous">("tous");
+  const [progression, setProgression] = useState(0);
   const contenu = audiences[audience];
 
   function choisir(a: Audience) {
@@ -27,9 +134,24 @@ export default function Portfolio({ initial }: { initial: Audience }) {
     window.history.replaceState(null, "", url);
   }
 
+  useEffect(() => {
+    const surDefilement = () => {
+      const h = document.documentElement;
+      const max = h.scrollHeight - h.clientHeight;
+      setProgression(max > 0 ? h.scrollTop / max : 0);
+    };
+    surDefilement();
+    window.addEventListener("scroll", surDefilement, { passive: true });
+    return () => window.removeEventListener("scroll", surDefilement);
+  }, []);
+
+  useApparition(audience + filtre);
+  const sectionActive = useSectionActive(contenu.ordreSections);
+
   const projetsTries = contenu.ordreProjets
     .map((id) => projets.find((p) => p.id === id))
-    .filter((p): p is Projet => Boolean(p));
+    .filter((p): p is Projet => Boolean(p))
+    .filter((p) => filtre === "tous" || p.domaine === filtre);
 
   const telephoneBrut = identite.telephone.replace(/\s/g, "");
   const annee = new Date().getFullYear();
@@ -38,31 +160,55 @@ export default function Portfolio({ initial }: { initial: Audience }) {
     projets: (
       <section id="projets" className="section" aria-labelledby="t-projets">
         <div className="conteneur">
-          <h2 id="t-projets" className="section__titre">
-            Projets
-          </h2>
-          <p className="section__intro">{contenu.introProjets}</p>
-          <div>
-            {projetsTries.map((p) => (
-              <article key={p.id} className="projet">
-                <div className="projet__meta">
-                  <p className="projet__statut">{p.statut}</p>
-                  <p>{p.categorie}</p>
+          <div className="section__entete apparait">
+            <div>
+              <h2 id="t-projets" className="section__titre">
+                Projets
+              </h2>
+              <p className="section__intro">{contenu.introProjets}</p>
+            </div>
+            <div className="filtres" role="group" aria-label="Filtrer les projets">
+              {filtres.map((f) => (
+                <button
+                  key={f}
+                  type="button"
+                  className="filtre"
+                  aria-pressed={filtre === f}
+                  onClick={() => setFiltre(f)}
+                >
+                  {libellesDomaines[f]}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="projets">
+            {projetsTries.map((p, i) => (
+              <article
+                key={p.id}
+                className={`projet apparait projet--${p.domaine}`}
+                style={{ "--delai": `${Math.min(i, 5) * 60}ms` } as React.CSSProperties}
+              >
+                <div className="projet__haut">
+                  <span className={`statut statut--${tonStatut(p.statut)}`}>
+                    {p.statut}
+                  </span>
+                  <span className="projet__domaine">
+                    {libellesDomaines[p.domaine]}
+                  </span>
                 </div>
-                <div>
-                  <h3 className="projet__titre">{p.titre}</h3>
-                  <p className="projet__resume">{p.resume}</p>
-                  <ul className="projet__tech" aria-label="Technologies et sujets">
-                    {p.technologies.map((t) => (
-                      <li key={t}>{t}</li>
-                    ))}
-                  </ul>
-                  {p.lien ? (
-                    <p>
-                      <a href={p.lien}>Consulter le projet</a>
-                    </p>
-                  ) : null}
-                </div>
+                <h3 className="projet__titre">{p.titre}</h3>
+                <p className="projet__categorie">{p.categorie}</p>
+                <p className="projet__resume">{p.resume}</p>
+                <ul className="puces" aria-label="Technologies et sujets">
+                  {p.technologies.map((t) => (
+                    <li key={t}>{t}</li>
+                  ))}
+                </ul>
+                {p.lien ? (
+                  <a className="projet__lien" href={p.lien}>
+                    Consulter le projet <span aria-hidden="true">→</span>
+                  </a>
+                ) : null}
               </article>
             ))}
           </div>
@@ -73,21 +219,30 @@ export default function Portfolio({ initial }: { initial: Audience }) {
     services: (
       <section id="services" className="section" aria-labelledby="t-services">
         <div className="conteneur">
-          <h2 id="t-services" className="section__titre">
-            Services
-          </h2>
-          <p className="section__intro">
-            Prestations proposées aux établissements d&apos;enseignement et aux
-            organisations du Cameroun.
-          </p>
-          <ul className="services">
-            {services.map((s) => (
-              <li key={s.titre} className="service">
+          <div className="apparait">
+            <h2 id="t-services" className="section__titre">
+              Services
+            </h2>
+            <p className="section__intro">
+              Prestations proposées aux établissements d&apos;enseignement et aux
+              organisations du Cameroun.
+            </p>
+          </div>
+          <ol className="services">
+            {services.map((s, i) => (
+              <li
+                key={s.titre}
+                className="service apparait"
+                style={{ "--delai": `${i * 70}ms` } as React.CSSProperties}
+              >
+                <span className="service__numero" aria-hidden="true">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
                 <h3>{s.titre}</h3>
                 <p>{s.texte}</p>
               </li>
             ))}
-          </ul>
+          </ol>
         </div>
       </section>
     ),
@@ -95,12 +250,12 @@ export default function Portfolio({ initial }: { initial: Audience }) {
     parcours: (
       <section id="parcours" className="section" aria-labelledby="t-parcours">
         <div className="conteneur">
-          <h2 id="t-parcours" className="section__titre">
+          <h2 id="t-parcours" className="section__titre apparait">
             Parcours
           </h2>
           <ol className="parcours">
             {parcours.map((e) => (
-              <li key={e.titre + e.lieu} className="etape">
+              <li key={e.titre + e.lieu} className="etape apparait">
                 <p className="etape__periode">{e.periode}</p>
                 <h3 className="etape__titre">{e.titre}</h3>
                 <p className="etape__lieu">{e.lieu}</p>
@@ -119,17 +274,25 @@ export default function Portfolio({ initial }: { initial: Audience }) {
         aria-labelledby="t-competences"
       >
         <div className="conteneur">
-          <h2 id="t-competences" className="section__titre">
+          <h2 id="t-competences" className="section__titre apparait">
             Compétences
           </h2>
-          <dl className="competences">
-            {competences.map((c) => (
-              <div key={c.domaine} className="competences__ligne">
-                <dt>{c.domaine}</dt>
-                <dd>{c.elements.join(", ")}</dd>
+          <div className="competences">
+            {competences.map((c, i) => (
+              <div
+                key={c.domaine}
+                className="competence apparait"
+                style={{ "--delai": `${i * 70}ms` } as React.CSSProperties}
+              >
+                <h3>{c.domaine}</h3>
+                <ul className="puces">
+                  {c.elements.map((el) => (
+                    <li key={el}>{el}</li>
+                  ))}
+                </ul>
               </div>
             ))}
-          </dl>
+          </div>
         </div>
       </section>
     ),
@@ -137,56 +300,56 @@ export default function Portfolio({ initial }: { initial: Audience }) {
     contact: (
       <section id="contact" className="section" aria-labelledby="t-contact">
         <div className="conteneur">
-          <h2 id="t-contact" className="section__titre">
-            Contact
-          </h2>
-          <p className="section__intro">
-            Pour un stage, un projet ou une question sur mon parcours, écrivez-moi
-            directement.
-          </p>
-          <p>
+          <div className="contact apparait">
+            <p className="contact__surtitre">Contact</p>
+            <h2 id="t-contact" className="contact__titre">
+              Un stage, un projet, une question ?
+              <br />
+              Écrivez-moi directement.
+            </h2>
             <a className="contact__email" href={`mailto:${identite.email}`}>
               {identite.email}
             </a>
-          </p>
-          <ul className="contact__liste">
-            {identite.whatsapp ? (
-              <li>
-                <a
-                  href={`https://wa.me/${identite.whatsapp}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Écrire sur WhatsApp
-                </a>
-              </li>
-            ) : null}
-            {identite.telephone ? (
-              <li>
-                <a href={`tel:${telephoneBrut}`}>{identite.telephone}</a>
-              </li>
-            ) : null}
-            {identite.linkedin ? (
-              <li>
-                <a href={identite.linkedin} target="_blank" rel="noopener noreferrer">
-                  LinkedIn
-                </a>
-              </li>
-            ) : null}
-            {identite.github ? (
-              <li>
-                <a href={identite.github} target="_blank" rel="noopener noreferrer">
-                  GitHub
-                </a>
-              </li>
-            ) : null}
-            {identite.cvUrl ? (
-              <li>
-                <a href={identite.cvUrl}>Télécharger le CV</a>
-              </li>
-            ) : null}
-            <li>{identite.localisation}</li>
-          </ul>
+            <ul className="contact__liste">
+              {identite.whatsapp ? (
+                <li>
+                  <a
+                    className="bouton bouton--clair"
+                    href={`https://wa.me/${identite.whatsapp}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Écrire sur WhatsApp
+                  </a>
+                </li>
+              ) : null}
+              {identite.telephone ? (
+                <li>
+                  <a href={`tel:${telephoneBrut}`}>{identite.telephone}</a>
+                </li>
+              ) : null}
+              {identite.linkedin ? (
+                <li>
+                  <a href={identite.linkedin} target="_blank" rel="noopener noreferrer">
+                    LinkedIn
+                  </a>
+                </li>
+              ) : null}
+              {identite.github ? (
+                <li>
+                  <a href={identite.github} target="_blank" rel="noopener noreferrer">
+                    GitHub
+                  </a>
+                </li>
+              ) : null}
+              {identite.cvUrl ? (
+                <li>
+                  <a href={identite.cvUrl}>Télécharger le CV</a>
+                </li>
+              ) : null}
+              <li>{identite.localisation}</li>
+            </ul>
+          </div>
         </div>
       </section>
     ),
@@ -198,29 +361,73 @@ export default function Portfolio({ initial }: { initial: Audience }) {
         Aller au contenu
       </a>
 
+      <div
+        className="progression"
+        style={{ transform: `scaleX(${progression})` }}
+        aria-hidden="true"
+      />
+
       <header className="entete">
         <div className="conteneur entete__interieur">
           <a className="entete__marque" href="#accueil">
+            <span className="entete__logo" aria-hidden="true">
+              FM
+            </span>
             {identite.nom}
           </a>
           <nav aria-label="Sections du portfolio" className="entete__nav">
             {contenu.ordreSections.map((id) => (
-              <a key={id} href={`#${id}`}>
+              <a
+                key={id}
+                href={`#${id}`}
+                aria-current={sectionActive === id ? "true" : undefined}
+              >
                 {libellesSections[id]}
               </a>
             ))}
           </nav>
+          <BoutonTheme />
         </div>
       </header>
 
       <main id="contenu">
         <section id="accueil" className="hero" aria-labelledby="t-accueil">
-          <div className="conteneur">
-            <h1 id="t-accueil" className="hero__nom">
-              {identite.nom}.
-            </h1>
-            <p className="hero__fonction">{identite.titre}</p>
+          <div className="hero__grille" aria-hidden="true" />
+          <div className="conteneur hero__disposition">
+            <div>
+              <p key={audience} className="badge">
+                <span className="badge__point" aria-hidden="true" />
+                {contenu.disponibilite}
+              </p>
+              <h1 id="t-accueil" className="hero__nom">
+                {identite.nom}
+                <span className="hero__point">.</span>
+              </h1>
+              <p className="hero__fonction">{identite.titre}</p>
+            </div>
 
+            <div className="terminal" aria-hidden="true">
+              <div className="terminal__barre">
+                <span />
+                <span />
+                <span />
+                <p>farel@enspy: ~</p>
+              </div>
+              <pre className="terminal__corps">
+                <span className="t-invite">$</span> whoami{"\n"}
+                <span className="t-sortie">{identite.nomComplet}</span>
+                {"\n\n"}
+                <span className="t-invite">$</span> cat profil.txt{"\n"}
+                <span className="t-cle">école    </span> ENSPY, Yaoundé{"\n"}
+                <span className="t-cle">filière  </span> Cybersécurité{"\n"}
+                <span className="t-cle">niveau   </span> 4e année{"\n"}
+                <span className="t-cle">studio   </span> Brix Studio{"\n\n"}
+                <span className="t-invite">$</span> <span className="curseur" />
+              </pre>
+            </div>
+          </div>
+
+          <div className="conteneur">
             <div className="choix" role="group" aria-label="Vous êtes">
               <span className="choix__label">Vous êtes</span>
               {listeAudiences.map((a) => (
@@ -241,15 +448,28 @@ export default function Portfolio({ initial }: { initial: Audience }) {
               <p className="hero__texte">{contenu.texte}</p>
               <p className="hero__actions">
                 <a className="bouton" href={contenu.cta.href}>
-                  {contenu.cta.libelle}
+                  {contenu.cta.libelle} <span aria-hidden="true">→</span>
                 </a>
                 {identite.cvUrl ? (
-                  <a className="lien-secondaire" href={identite.cvUrl}>
+                  <a className="bouton bouton--contour" href={identite.cvUrl}>
                     Télécharger le CV
                   </a>
-                ) : null}
+                ) : (
+                  <a className="bouton bouton--contour" href="#projets">
+                    Voir les projets
+                  </a>
+                )}
               </p>
             </div>
+
+            <dl className="chiffres">
+              {chiffres.map((c) => (
+                <div key={c.libelle} className="chiffre">
+                  <dt>{c.libelle}</dt>
+                  <dd>{c.valeur}</dd>
+                </div>
+              ))}
+            </dl>
           </div>
         </section>
 
@@ -259,10 +479,11 @@ export default function Portfolio({ initial }: { initial: Audience }) {
       </main>
 
       <footer className="pied">
-        <div className="conteneur">
+        <div className="conteneur pied__interieur">
           <p>
             © {annee} {identite.nomComplet}. {identite.localisation}.
           </p>
+          <a href="#accueil">Retour en haut ↑</a>
         </div>
       </footer>
     </>

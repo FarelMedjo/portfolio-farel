@@ -1,14 +1,55 @@
 :root {
   --fond: #edf1f5;
   --panneau: #f8fafc;
+  --carte: #ffffff;
   --encre: #0f1b2d;
   --acier: #4f5d70;
   --filet: #c5cfda;
   --sceau: #b3261e;
   --sceau-fonce: #8f1d17;
+  --sceau-doux: rgba(179, 38, 30, 0.09);
+  --ok: #1d7a4a;
+  --ok-doux: rgba(29, 122, 74, 0.1);
+  --encours: #a35c00;
+  --encours-doux: rgba(196, 116, 0, 0.12);
+  --ombre: 0 1px 2px rgba(15, 27, 45, 0.06), 0 8px 24px -12px rgba(15, 27, 45, 0.18);
+  --ombre-forte: 0 2px 4px rgba(15, 27, 45, 0.06), 0 22px 40px -18px rgba(15, 27, 45, 0.32);
+  --entete: rgba(237, 241, 245, 0.85);
+  --grille: rgba(15, 27, 45, 0.07);
+  /* Le terminal et le bloc contact restent sombres dans les deux thèmes. */
+  --nuit: #0b1422;
+  --nuit-2: #13203a;
+  --nuit-texte: #dbe4ef;
+  --nuit-attenue: #8a9bb2;
   --police-titre: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
   --police-texte: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --police-code: "JetBrains Mono", ui-monospace, "Cascadia Code", Consolas, monospace;
   --marge: clamp(1.25rem, 5vw, 3rem);
+  --rayon: 14px;
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --fond: #0a111d;
+  --panneau: #111a2a;
+  --carte: #121c2d;
+  --encre: #e6edf5;
+  --acier: #97a6ba;
+  --filet: #24324a;
+  --sceau: #ef5a4c;
+  --sceau-fonce: #ff7a6d;
+  --sceau-doux: rgba(239, 90, 76, 0.13);
+  --ok: #4fcf8b;
+  --ok-doux: rgba(79, 207, 139, 0.12);
+  --encours: #f2b347;
+  --encours-doux: rgba(242, 179, 71, 0.13);
+  --ombre: 0 1px 2px rgba(0, 0, 0, 0.3), 0 10px 26px -14px rgba(0, 0, 0, 0.7);
+  --ombre-forte: 0 2px 4px rgba(0, 0, 0, 0.3), 0 24px 44px -18px rgba(0, 0, 0, 0.85);
+  --entete: rgba(10, 17, 29, 0.8);
+  --grille: rgba(230, 237, 245, 0.06);
+  --nuit: #060c16;
+  --nuit-2: #0f1a2c;
+  color-scheme: dark;
 }
 
 *,
@@ -30,6 +71,7 @@ body {
   font-size: 1.0625rem;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 h1,
@@ -39,7 +81,8 @@ p,
 ul,
 ol,
 dl,
-dd {
+dd,
+pre {
   margin: 0;
 }
 
@@ -58,6 +101,11 @@ a:hover {
   color: var(--sceau);
 }
 
+::selection {
+  background: var(--sceau);
+  color: #ffffff;
+}
+
 :focus-visible {
   outline: 3px solid var(--sceau);
   outline-offset: 3px;
@@ -65,7 +113,7 @@ a:hover {
 
 .conteneur {
   width: 100%;
-  max-width: 68rem;
+  max-width: 72rem;
   margin-inline: auto;
   padding-inline: var(--marge);
 }
@@ -77,12 +125,21 @@ a:hover {
   background: var(--encre);
   color: var(--panneau);
   padding: 0.6rem 1rem;
-  z-index: 20;
+  z-index: 30;
 }
 
 .lien-evitement:focus {
   top: 1rem;
   color: var(--panneau);
+}
+
+.progression {
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: var(--sceau);
+  transform-origin: left;
+  z-index: 20;
 }
 
 /* ---------- En-tête ---------- */
@@ -91,20 +148,23 @@ a:hover {
   position: sticky;
   top: 0;
   z-index: 10;
-  background: rgba(237, 241, 245, 0.94);
-  backdrop-filter: blur(6px);
+  background: var(--entete);
+  backdrop-filter: blur(10px) saturate(1.4);
+  -webkit-backdrop-filter: blur(10px) saturate(1.4);
   border-bottom: 1px solid var(--filet);
 }
 
 .entete__interieur {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 1.5rem;
-  min-height: 3.5rem;
+  gap: 1.25rem;
+  min-height: 3.75rem;
 }
 
 .entete__marque {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
   font-family: var(--police-titre);
   font-weight: 800;
   font-size: 1.15rem;
@@ -112,9 +172,22 @@ a:hover {
   white-space: nowrap;
 }
 
+.entete__logo {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 8px;
+  background: var(--sceau);
+  color: #ffffff;
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+}
+
 .entete__nav {
   display: flex;
-  gap: 1.4rem;
+  gap: 0.25rem;
+  margin-left: auto;
   overflow-x: auto;
   font-size: 0.95rem;
   font-weight: 600;
@@ -128,23 +201,154 @@ a:hover {
 .entete__nav a {
   text-decoration: none;
   white-space: nowrap;
-  padding-block: 0.4rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  color: var(--acier);
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.entete__nav a:hover {
+  color: var(--encre);
+}
+
+.entete__nav a[aria-current="true"] {
+  color: var(--sceau);
+  background: var(--sceau-doux);
+}
+
+.theme {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  border: 1px solid var(--filet);
+  border-radius: 999px;
+  background: var(--carte);
+  color: var(--encre);
+  cursor: pointer;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.theme:hover {
+  border-color: var(--sceau);
+  transform: rotate(-12deg);
+}
+
+.theme svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+@media (max-width: 40rem) {
+  .entete__interieur {
+    flex-wrap: wrap;
+    gap: 0 0.75rem;
+    padding-block: 0.4rem;
+  }
+
+  .entete__marque {
+    flex: 1;
+  }
+
+  .entete__nav {
+    order: 3;
+    width: 100%;
+    margin-left: -0.75rem;
+  }
 }
 
 /* ---------- Accueil ---------- */
 
 .hero {
-  padding-block: clamp(3rem, 8vw, 6rem) clamp(3rem, 7vw, 5rem);
+  position: relative;
+  overflow: hidden;
+  padding-block: clamp(3rem, 8vw, 6rem) clamp(3rem, 6vw, 4.5rem);
+}
+
+.hero__grille {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: linear-gradient(var(--grille) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grille) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: radial-gradient(ellipse 80% 70% at 70% 20%, #000 20%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 70% 20%, #000 20%, transparent 75%);
+}
+
+.hero__grille::after {
+  content: "";
+  position: absolute;
+  width: 34rem;
+  height: 34rem;
+  right: -8rem;
+  top: -12rem;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--sceau-doux), transparent 65%);
+}
+
+.hero__disposition {
+  display: grid;
+  gap: 2.5rem;
+  align-items: center;
+}
+
+@media (min-width: 60rem) {
+  .hero__disposition {
+    grid-template-columns: 1fr 24rem;
+  }
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1.5rem;
+  padding: 0.4rem 0.9rem 0.4rem 0.7rem;
+  border: 1px solid var(--filet);
+  border-radius: 999px;
+  background: var(--carte);
+  font-size: 0.9rem;
+  font-weight: 600;
+  box-shadow: var(--ombre);
+  animation: fondu 0.4s ease both;
+}
+
+.badge__point {
+  position: relative;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: var(--ok);
+}
+
+.badge__point::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--ok);
+  animation: pulsation 2s ease-out infinite;
 }
 
 .hero__nom {
   font-family: var(--police-titre);
   font-weight: 800;
-  font-size: clamp(3.75rem, 15vw, 10.5rem);
+  font-size: clamp(3.75rem, 13vw, 9.5rem);
   line-height: 0.9;
   letter-spacing: -0.045em;
   margin-left: -0.04em;
   animation: revele 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+.hero__point {
+  color: var(--sceau);
 }
 
 .hero__fonction {
@@ -155,33 +359,110 @@ a:hover {
   color: var(--acier);
 }
 
+/* Terminal décoratif */
+
+.terminal {
+  border-radius: var(--rayon);
+  background: linear-gradient(160deg, var(--nuit-2), var(--nuit));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: var(--ombre-forte);
+  overflow: hidden;
+  animation: monte 0.8s 0.25s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+.terminal__barre {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.7rem 0.9rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.terminal__barre span {
+  width: 0.65rem;
+  height: 0.65rem;
+  border-radius: 50%;
+  background: #3a475c;
+}
+
+.terminal__barre span:first-child {
+  background: #ef5a4c;
+}
+
+.terminal__barre p {
+  margin-left: auto;
+  font-family: var(--police-code);
+  font-size: 0.75rem;
+  color: var(--nuit-attenue);
+}
+
+.terminal__corps {
+  padding: 1.1rem 1.2rem 1.3rem;
+  font-family: var(--police-code);
+  font-size: 0.85rem;
+  line-height: 1.7;
+  color: var(--nuit-texte);
+  white-space: pre-wrap;
+}
+
+.t-invite {
+  color: #ef5a4c;
+  font-weight: 700;
+}
+
+.t-sortie {
+  color: #4fcf8b;
+}
+
+.t-cle {
+  color: var(--nuit-attenue);
+}
+
+.curseur {
+  display: inline-block;
+  width: 0.55em;
+  height: 1.1em;
+  vertical-align: text-bottom;
+  background: var(--nuit-texte);
+  animation: clignote 1.1s steps(1) infinite;
+}
+
+/* Choix du public */
+
 .choix {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
-  gap: 0.4rem 1.75rem;
-  margin-top: clamp(2.5rem, 6vw, 4rem);
-  padding-top: 1.25rem;
-  border-top: 1px solid var(--filet);
+  align-items: center;
+  gap: 0.6rem;
+  width: fit-content;
+  max-width: 100%;
+  margin-top: clamp(2.5rem, 6vw, 3.5rem);
+  padding: 0.35rem;
+  border: 1px solid var(--filet);
+  border-radius: 999px;
+  background: var(--carte);
+  box-shadow: var(--ombre);
 }
 
 .choix__label {
+  padding-left: 0.8rem;
   color: var(--acier);
-  font-size: 0.95rem;
+  font-size: 0.9rem;
 }
 
 .choix__bouton {
   appearance: none;
   background: none;
   border: 0;
-  border-bottom: 4px solid transparent;
-  padding: 0.25rem 0 0.3rem;
+  border-radius: 999px;
+  padding: 0.45rem 1rem;
   font: inherit;
   font-family: var(--police-titre);
   font-weight: 600;
-  font-size: 1.3rem;
+  font-size: 1.05rem;
   color: var(--acier);
   cursor: pointer;
+  transition: color 0.2s ease, background-color 0.2s ease;
 }
 
 .choix__bouton:hover {
@@ -189,8 +470,14 @@ a:hover {
 }
 
 .choix__bouton[aria-pressed="true"] {
-  color: var(--encre);
-  border-bottom-color: var(--sceau);
+  color: #ffffff;
+  background: var(--sceau);
+}
+
+@media (max-width: 34rem) {
+  .choix {
+    border-radius: var(--rayon);
+  }
 }
 
 .hero__pitch {
@@ -210,122 +497,420 @@ a:hover {
 .hero__texte {
   margin-top: 1.1rem;
   max-width: 40rem;
+  color: var(--acier);
 }
 
 .hero__actions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 1rem 1.75rem;
+  gap: 0.75rem;
   margin-top: 1.75rem;
 }
 
 .bouton {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
   background: var(--sceau);
   color: #ffffff;
   padding: 0.85rem 1.4rem;
-  border-radius: 2px;
+  border: 1px solid var(--sceau);
+  border-radius: 10px;
   font-weight: 700;
   text-decoration: none;
+  box-shadow: 0 10px 22px -12px var(--sceau);
+  transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.bouton span {
+  transition: transform 0.2s ease;
 }
 
 .bouton:hover {
   background: var(--sceau-fonce);
+  border-color: var(--sceau-fonce);
   color: #ffffff;
+  transform: translateY(-2px);
 }
 
-.lien-secondaire {
-  font-weight: 600;
+.bouton:hover span {
+  transform: translateX(3px);
+}
+
+.bouton--contour {
+  background: transparent;
+  color: var(--encre);
+  border-color: var(--filet);
+  box-shadow: none;
+}
+
+.bouton--contour:hover {
+  background: var(--carte);
+  border-color: var(--encre);
+  color: var(--encre);
+}
+
+.bouton--clair {
+  background: #ffffff;
+  color: var(--nuit);
+  border-color: #ffffff;
+  box-shadow: none;
+}
+
+.bouton--clair:hover {
+  background: #e6edf5;
+  border-color: #e6edf5;
+  color: var(--nuit);
+}
+
+/* Chiffres clés */
+
+.chiffres {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  margin-top: clamp(2.5rem, 6vw, 4rem);
+  border: 1px solid var(--filet);
+  border-radius: var(--rayon);
+  background: var(--carte);
+  box-shadow: var(--ombre);
+  overflow: hidden;
+}
+
+.chiffre {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: flex-end;
+  gap: 0.2rem;
+  padding: 1.25rem 1.4rem;
+  border-color: var(--filet);
+  border-style: solid;
+  border-width: 0;
+}
+
+.chiffre:nth-child(odd) {
+  border-right-width: 1px;
+}
+
+.chiffre:nth-child(-n + 2) {
+  border-bottom-width: 1px;
+}
+
+.chiffre dd {
+  font-family: var(--police-titre);
+  font-weight: 800;
+  font-size: clamp(1.9rem, 4vw, 2.6rem);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--sceau);
+}
+
+.chiffre dt {
+  font-size: 0.92rem;
+  color: var(--acier);
+  line-height: 1.35;
+}
+
+@media (min-width: 52rem) {
+  .chiffres {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .chiffre:nth-child(-n + 2) {
+    border-bottom-width: 0;
+  }
+
+  .chiffre:not(:last-child) {
+    border-right-width: 1px;
+  }
 }
 
 /* ---------- Sections ---------- */
 
 .section {
+  padding-block: clamp(3.5rem, 7vw, 5.5rem);
   border-top: 1px solid var(--filet);
-  padding-block: clamp(3rem, 6vw, 4.5rem);
+}
+
+.section__entete {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
 }
 
 .section__titre {
+  position: relative;
   font-family: var(--police-titre);
   font-weight: 800;
-  font-size: clamp(1.9rem, 4vw, 2.6rem);
-  letter-spacing: -0.02em;
+  font-size: clamp(2rem, 4.4vw, 2.9rem);
+  letter-spacing: -0.025em;
   line-height: 1.1;
 }
 
+.section__titre::after {
+  content: "";
+  display: block;
+  width: 2.5rem;
+  height: 4px;
+  margin-top: 0.7rem;
+  border-radius: 2px;
+  background: var(--sceau);
+}
+
 .section__intro {
-  margin-top: 0.75rem;
+  margin-top: 0.9rem;
   max-width: 40rem;
   color: var(--acier);
 }
 
-/* ---------- Projets ---------- */
+/* Apparition au défilement */
 
-.projet {
-  display: grid;
-  gap: 0.75rem 2rem;
-  padding-block: 1.75rem;
-  border-bottom: 1px solid var(--filet);
+/* Masqué seulement si JavaScript est actif, pour que le contenu reste lisible sans. */
+.js .apparait {
+  opacity: 0;
 }
 
-.projet:first-child {
-  margin-top: 2rem;
-  border-top: 2px solid var(--encre);
+.js .apparait.visible {
+  opacity: 1;
+  animation: monte 0.6s var(--delai, 0s) cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
 }
 
-.projet__meta {
-  font-size: 0.95rem;
+/* ---------- Puces ---------- */
+
+.puces {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.puces li {
+  padding: 0.2rem 0.65rem;
+  border: 1px solid var(--filet);
+  border-radius: 999px;
+  background: var(--panneau);
+  font-size: 0.85rem;
+  font-weight: 600;
   color: var(--acier);
+  transition: border-color 0.2s ease, color 0.2s ease;
 }
 
-.projet__statut {
-  font-weight: 700;
+.puces li:hover {
+  border-color: var(--sceau);
   color: var(--encre);
 }
 
+/* ---------- Projets ---------- */
+
+.filtres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.filtre {
+  appearance: none;
+  padding: 0.45rem 0.95rem;
+  border: 1px solid var(--filet);
+  border-radius: 999px;
+  background: var(--carte);
+  font: inherit;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--acier);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filtre:hover {
+  color: var(--encre);
+  border-color: var(--encre);
+}
+
+.filtre[aria-pressed="true"] {
+  background: var(--encre);
+  border-color: var(--encre);
+  color: var(--fond);
+}
+
+.projets {
+  display: grid;
+  gap: 1.25rem;
+  margin-top: 2.25rem;
+}
+
+@media (min-width: 46rem) {
+  .projets {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.projet {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem 1.5rem 1.6rem;
+  border: 1px solid var(--filet);
+  border-radius: var(--rayon);
+  background: var(--carte);
+  box-shadow: var(--ombre);
+  overflow: hidden;
+}
+
+.projet::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: var(--sceau);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s ease;
+}
+
+.projet {
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.projet:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--ombre-forte);
+  border-color: color-mix(in srgb, var(--sceau) 40%, var(--filet));
+}
+
+.projet:hover::before {
+  transform: scaleX(1);
+}
+
+.projet__haut {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.statut {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.statut::before {
+  content: "";
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.statut--ok {
+  color: var(--ok);
+  background: var(--ok-doux);
+}
+
+.statut--encours {
+  color: var(--encours);
+  background: var(--encours-doux);
+}
+
+.statut--neutre {
+  color: var(--acier);
+  background: var(--panneau);
+  border: 1px solid var(--filet);
+}
+
+.projet__domaine {
+  font-family: var(--police-code);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--acier);
+}
+
 .projet__titre {
+  margin-top: 1rem;
   font-family: var(--police-titre);
   font-weight: 600;
   font-size: 1.3rem;
   line-height: 1.25;
 }
 
-.projet__resume {
-  margin-top: 0.5rem;
-  max-width: 42rem;
-}
-
-.projet__tech {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.15rem 1rem;
-  margin-top: 0.75rem;
-  font-size: 0.95rem;
-  color: var(--acier);
+.projet__categorie {
+  margin-top: 0.3rem;
+  font-size: 0.92rem;
   font-weight: 600;
+  color: var(--sceau);
 }
 
-@media (min-width: 48rem) {
-  .projet {
-    grid-template-columns: 13rem 1fr;
-  }
+.projet__resume {
+  margin-top: 0.75rem;
+  margin-bottom: 1.1rem;
+  color: var(--acier);
+}
+
+.projet .puces {
+  margin-top: auto;
+}
+
+.projet__lien {
+  margin-top: 1rem;
+  font-weight: 700;
+  text-decoration: none;
 }
 
 /* ---------- Services ---------- */
 
 .services {
   display: grid;
-  gap: 2rem 2.5rem;
-  margin-top: 2rem;
+  gap: 1.25rem;
+  margin-top: 2.25rem;
+}
+
+@media (min-width: 46rem) {
+  .services {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 .service {
-  border-top: 2px solid var(--encre);
-  padding-top: 0.9rem;
+  position: relative;
+  padding: 1.6rem 1.5rem;
+  border: 1px solid var(--filet);
+  border-radius: var(--rayon);
+  background: var(--carte);
+  box-shadow: var(--ombre);
+}
+
+.service {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.service:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--ombre-forte);
+}
+
+.service__numero {
+  display: inline-grid;
+  place-items: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 10px;
+  background: var(--sceau-doux);
+  color: var(--sceau);
+  font-family: var(--police-code);
+  font-weight: 700;
+  font-size: 0.9rem;
 }
 
 .service h3 {
+  margin-top: 1rem;
   font-family: var(--police-titre);
   font-weight: 600;
   font-size: 1.25rem;
@@ -334,25 +919,30 @@ a:hover {
 
 .service p {
   margin-top: 0.5rem;
-  max-width: 30rem;
-}
-
-@media (min-width: 48rem) {
-  .services {
-    grid-template-columns: repeat(2, 1fr);
-  }
+  color: var(--acier);
 }
 
 /* ---------- Parcours ---------- */
 
 .parcours {
-  margin-top: 2rem;
-  border-left: 2px solid var(--filet);
+  position: relative;
+  margin-top: 2.25rem;
+  padding-left: 0.4rem;
+}
+
+.parcours::before {
+  content: "";
+  position: absolute;
+  left: 0.4rem;
+  top: 0.5rem;
+  bottom: 0.5rem;
+  width: 2px;
+  background: linear-gradient(var(--sceau), var(--filet));
 }
 
 .etape {
   position: relative;
-  padding: 0 0 2.25rem 1.75rem;
+  padding: 0 0 2.5rem 2rem;
 }
 
 .etape:last-child {
@@ -362,21 +952,29 @@ a:hover {
 .etape::before {
   content: "";
   position: absolute;
-  left: -0.4rem;
-  top: 0.45rem;
-  width: 0.7rem;
-  height: 0.7rem;
-  background: var(--encre);
+  left: -0.45rem;
+  top: 0.3rem;
+  width: 0.9rem;
+  height: 0.9rem;
+  border-radius: 50%;
+  background: var(--fond);
+  border: 3px solid var(--sceau);
+  box-shadow: 0 0 0 5px var(--fond);
 }
 
 .etape__periode {
-  font-size: 0.95rem;
+  display: inline-block;
+  padding: 0.1rem 0.6rem;
+  border-radius: 6px;
+  background: var(--sceau-doux);
+  font-family: var(--police-code);
+  font-size: 0.8rem;
   font-weight: 700;
   color: var(--sceau);
 }
 
 .etape__titre {
-  margin-top: 0.15rem;
+  margin-top: 0.5rem;
   font-family: var(--police-titre);
   font-weight: 600;
   font-size: 1.25rem;
@@ -385,68 +983,110 @@ a:hover {
 }
 
 .etape__lieu {
-  color: var(--acier);
+  margin-top: 0.15rem;
+  color: var(--encre);
   font-weight: 600;
 }
 
 .etape__texte {
   margin-top: 0.5rem;
   max-width: 40rem;
+  color: var(--acier);
 }
 
 /* ---------- Compétences ---------- */
 
 .competences {
-  margin-top: 2rem;
-  border-top: 2px solid var(--encre);
-}
-
-.competences__ligne {
   display: grid;
-  gap: 0.35rem 2rem;
-  padding-block: 1.1rem;
-  border-bottom: 1px solid var(--filet);
+  gap: 1.25rem;
+  margin-top: 2.25rem;
 }
 
-.competences dt {
-  font-family: var(--police-titre);
-  font-weight: 600;
-  font-size: 1.1rem;
-}
-
-@media (min-width: 48rem) {
-  .competences__ligne {
-    grid-template-columns: 13rem 1fr;
+@media (min-width: 46rem) {
+  .competences {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
+.competence {
+  padding: 1.4rem 1.5rem 1.5rem;
+  border: 1px solid var(--filet);
+  border-radius: var(--rayon);
+  background: var(--carte);
+  box-shadow: var(--ombre);
+}
+
+.competence h3 {
+  margin-bottom: 0.9rem;
+  font-family: var(--police-titre);
+  font-weight: 600;
+  font-size: 1.15rem;
+}
+
 /* ---------- Contact ---------- */
+
+.contact {
+  position: relative;
+  padding: clamp(2rem, 6vw, 4rem);
+  border-radius: calc(var(--rayon) + 6px);
+  background: radial-gradient(circle at 100% 0%, rgba(239, 90, 76, 0.35), transparent 45%),
+    linear-gradient(160deg, var(--nuit-2), var(--nuit));
+  color: var(--nuit-texte);
+  box-shadow: var(--ombre-forte);
+  overflow: hidden;
+}
+
+.contact__surtitre {
+  font-family: var(--police-code);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #ef5a4c;
+}
+
+.contact__titre {
+  margin-top: 0.75rem;
+  font-family: var(--police-titre);
+  font-weight: 800;
+  font-size: clamp(1.8rem, 4.5vw, 3rem);
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  color: #ffffff;
+}
 
 .contact__email {
   display: inline-block;
   margin-top: 1.5rem;
   font-family: var(--police-titre);
   font-weight: 600;
-  font-size: clamp(1.4rem, 4.5vw, 2.4rem);
-  letter-spacing: -0.02em;
+  font-size: clamp(1.25rem, 4vw, 2rem);
+  letter-spacing: -0.01em;
+  color: #ffffff;
+  text-decoration-color: #ef5a4c;
+  text-decoration-thickness: 2px;
   overflow-wrap: anywhere;
+}
+
+.contact__email:hover {
+  color: #ff8a7e;
 }
 
 .contact__liste {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem 1.75rem;
-  margin-top: 1.25rem;
-  color: var(--acier);
+  align-items: center;
+  gap: 0.75rem 1.75rem;
+  margin-top: 2rem;
+  color: var(--nuit-attenue);
 }
 
-.contact__liste a {
-  color: var(--encre);
+.contact__liste a:not(.bouton) {
+  color: #ffffff;
   font-weight: 600;
 }
 
-.contact__liste a:hover {
-  color: var(--sceau);
+.contact__liste a:not(.bouton):hover {
+  color: #ff8a7e;
 }
 
 /* ---------- Pied de page ---------- */
@@ -456,6 +1096,23 @@ a:hover {
   padding-block: 2rem;
   font-size: 0.95rem;
   color: var(--acier);
+}
+
+.pied__interieur {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.75rem 2rem;
+}
+
+.pied a {
+  color: var(--acier);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.pied a:hover {
+  color: var(--sceau);
 }
 
 /* ---------- Mouvement ---------- */
@@ -478,13 +1135,47 @@ a:hover {
   }
 }
 
+@keyframes monte {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes pulsation {
+  from {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  to {
+    transform: scale(2.8);
+    opacity: 0;
+  }
+}
+
+@keyframes clignote {
+  50% {
+    opacity: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
   }
 
-  .hero__nom,
-  .hero__pitch {
-    animation: none;
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .js .apparait {
+    opacity: 1;
   }
 }

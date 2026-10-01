@@ -49,11 +49,20 @@ export const libellesSections: Record<SectionId, string> = {
 /* Projets                                                             */
 /* ------------------------------------------------------------------ */
 
+export type Domaine = "securite" | "developpement";
+
+export const libellesDomaines: Record<Domaine | "tous", string> = {
+  tous: "Tous",
+  securite: "Sécurité et réseaux",
+  developpement: "Développement",
+};
+
 export type Projet = {
   id: string;
   titre: string;
   categorie: string;
   statut: string;
+  domaine: Domaine;
   resume: string;
   technologies: string[];
   lien?: string;
@@ -65,6 +74,7 @@ export const projets: Projet[] = [
     titre: "Investigation numérique sur un serveur Metasploitable 2",
     categorie: "Cours de hacking éthique, ENSPY",
     statut: "Terminé",
+    domaine: "securite",
     resume:
       "Investigation menée sur un serveur volontairement vulnérable : démarche, constats et conclusions consignés dans un rapport de 39 pages, accompagné d'une présentation.",
     technologies: ["Investigation numérique", "Metasploitable 2", "LaTeX"],
@@ -74,6 +84,7 @@ export const projets: Projet[] = [
     titre: "Analyse de risques avec EBIOS Risk Manager",
     categorie: "Gestion des risques, ENSPY",
     statut: "Terminé",
+    domaine: "securite",
     resume:
       "Projet de gestion des risques selon la méthode EBIOS Risk Manager, livré sous forme de rapport structuré.",
     technologies: ["EBIOS Risk Manager", "Gestion des risques", "LaTeX"],
@@ -83,6 +94,7 @@ export const projets: Projet[] = [
     titre: "Architecture réseau hiérarchique 4-tier avec sortie BGP",
     categorie: "Travaux pratiques réseau, ENSPY",
     statut: "Terminé",
+    domaine: "securite",
     resume:
       "Construction d'une architecture réseau hiérarchique à quatre niveaux avec sortie BGP, simulée sous EVE-NG (topologie 4-tier_Egress_PA_02).",
     technologies: ["EVE-NG", "BGP", "Réseau hiérarchique"],
@@ -92,6 +104,7 @@ export const projets: Projet[] = [
     titre: "Rapport CEH v13, module 06 : System Hacking",
     categorie: "Certification préparée, ENSPY",
     statut: "Terminé",
+    domaine: "securite",
     resume:
       "Rapport de module illustré par une soixantaine de captures d'écran documentant les manipulations réalisées.",
     technologies: ["CEH v13", "System Hacking", "LaTeX"],
@@ -101,6 +114,7 @@ export const projets: Projet[] = [
     titre: "Plateforme d'évaluation en ligne sécurisée",
     categorie: "Mémoire de stage, cellule informatique d'ICORP",
     statut: "En cours",
+    domaine: "securite",
     resume:
       "Thème de mon mémoire de niveau 4 : une plateforme d'évaluation en ligne pour les concours blancs, conçue autour de l'intégrité des épreuves et de la prévention de la fraude.",
     technologies: ["Sécurité applicative", "Intégrité des épreuves", "Anti-fraude"],
@@ -110,6 +124,7 @@ export const projets: Projet[] = [
     titre: "BrixSchool, gestion d'établissements scolaires",
     categorie: "Brix Studio",
     statut: "En développement",
+    domaine: "developpement",
     resume:
       "Application de gestion scolaire pensée pour le contexte camerounais et la zone CEMAC : modules par profil d'utilisateur, contrôle d'accès par rôle et schémas SQL complets. Elle prolonge EduBrix, une première version réalisée avec Laravel puis avec React et Supabase.",
     technologies: ["React", "TypeScript", "Supabase", "Laravel", "RBAC"],
@@ -119,6 +134,7 @@ export const projets: Projet[] = [
     titre: "TutorLab, mise en relation entre tuteurs et familles",
     categorie: "Projet personnel, Yaoundé",
     statut: "En construction",
+    domaine: "developpement",
     resume:
       "Plateforme qui met en relation des familles et des tuteurs à Yaoundé, avec paiement par Mobile Money en FCFA.",
     technologies: ["Mobile Money", "FCFA", "Mise en relation"],
@@ -128,10 +144,22 @@ export const projets: Projet[] = [
     titre: "Near2Ride, véhicule et conducteur à proximité",
     categorie: "Projet personnel",
     statut: "Concept",
+    domaine: "developpement",
     resume:
       "Permettre à chacun de trouver et de réserver, à quelques pas de son point de départ, le véhicule et/ou le conducteur dont il a besoin pour se déplacer.",
     technologies: ["Mobilité", "Réservation", "Géolocalisation"],
   },
+];
+
+/* ------------------------------------------------------------------ */
+/* Chiffres clés affichés sous l'accueil                               */
+/* ------------------------------------------------------------------ */
+
+export const chiffres = [
+  { valeur: "4e", libelle: "année d'ingénieur à l'ENSPY" },
+  { valeur: String(projets.length), libelle: "projets en sécurité et en développement" },
+  { valeur: "39", libelle: "pages pour le rapport d'investigation" },
+  { valeur: "CEH", libelle: "v13, certification préparée" },
 ];
 
 /* ------------------------------------------------------------------ */
@@ -252,6 +280,7 @@ export const audiences: Record<
   Audience,
   {
     libelle: string;
+    disponibilite: string;
     titre: string;
     texte: string;
     cta: { libelle: string; href: string };
@@ -262,6 +291,7 @@ export const audiences: Record<
 > = {
   recruteur: {
     libelle: "Recruteur",
+    disponibilite: "Disponible pour un stage de fin de formation",
     titre:
       "Étudiant ingénieur en cybersécurité, à la recherche d'un stage de fin de formation.",
     texte:
@@ -283,6 +313,7 @@ export const audiences: Record<
   },
   client: {
     libelle: "Client",
+    disponibilite: "Disponible pour de nouveaux projets web",
     titre:
       "Des sites web et des outils de gestion pour les établissements d'enseignement.",
     texte:
@@ -304,6 +335,7 @@ export const audiences: Record<
   },
   academique: {
     libelle: "Jury académique",
+    disponibilite: "Élève ingénieur en 4e année à l'ENSPY",
     titre:
       "Un parcours d'ingénieur centré sur la sécurité, les réseaux et les systèmes d'information.",
     texte:
