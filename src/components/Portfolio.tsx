@@ -26,7 +26,7 @@ function tonStatut(statut: string) {
   if (statut === "Terminé" || statut === "Réalisé") return "ok";
   if (
     statut === "Concept" ||
-    statut === "Projet académique" ||
+    statut.startsWith("Projet académique") ||
     statut === "Projet de conception"
   ) {
     return "neutre";
