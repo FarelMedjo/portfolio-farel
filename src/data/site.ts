@@ -653,6 +653,34 @@ export const competences = [
       "Systèmes de design",
     ],
   },
+  {
+    domaine: "Marketing digital et conseil",
+    elements: [
+      "SEO technique",
+      "Google Analytics 4",
+      "Google Search Console",
+      "Bing Webmaster Tools",
+      "IndexNow",
+      "Wix",
+      "Rédaction d'articles de blog",
+      "Lead magnet et automatisation par courriel",
+      "Audit technique de sites web",
+      "Prospection et présentations commerciales",
+    ],
+  },
+  {
+    domaine: "Enseignement et pédagogie",
+    elements: [
+      "Préparation aux concours",
+      "Mathématiques",
+      "Statistiques et probabilités",
+      "Tests psychotechniques",
+      "Culture générale (intelligence artificielle)",
+      "Conception de sujets et de corrigés",
+      "Supports de cours et fiches pédagogiques",
+      "Coordination académique",
+    ],
+  },
 ];
 
 /* ------------------------------------------------------------------ */
