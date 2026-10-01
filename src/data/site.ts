@@ -534,6 +534,25 @@ export const services = [
     texte:
       "Applications de gestion d'établissements : rôles et droits d'accès, modules par profil d'utilisateur, adaptation au contexte local.",
   },
+  {
+    titre: "Applications web et mobiles sur mesure",
+    texte:
+      "Conception et développement d'applications adaptées à un besoin précis : analyse du besoin, modélisation, interface, développement et mise en ligne.",
+  },
+  {
+    titre: "Référencement et analytique",
+    texte:
+      "Mise en place de l'analytique (Google Analytics 4, Search Console, Bing Webmaster Tools), optimisation des balises et du plan de site, suivi de l'indexation.",
+  },
+  {
+    titre: "Contenu et réseaux sociaux",
+    texte:
+      "Rédaction d'articles de blog, création de contenus et gestion de pages sur les réseaux sociaux.",
+  },
+  {
+    titre: "Supports de communication",
+    texte: "Affiches, présentations commerciales et montage vidéo.",
+  },
 ];
 
 /* ------------------------------------------------------------------ */
