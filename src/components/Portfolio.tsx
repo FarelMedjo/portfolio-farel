@@ -9,10 +9,11 @@ import {
   libellesDomaines,
   libellesSections,
   parcours,
-  projets,
+  projetsVisibles,
   services,
   type Audience,
   type Domaine,
+  type ImageProjet,
   type Projet,
   type SectionId,
 } from "@/data/site";
@@ -22,9 +23,91 @@ const filtres = Object.keys(libellesDomaines) as (Domaine | "tous")[];
 
 /* Couleur du badge de statut selon l'avancement du projet. */
 function tonStatut(statut: string) {
-  if (statut === "Terminé") return "ok";
-  if (statut === "Concept") return "neutre";
+  if (statut === "Terminé" || statut === "Réalisé") return "ok";
+  if (
+    statut === "Concept" ||
+    statut.startsWith("Projet académique") ||
+    statut === "Projet de conception"
+  ) {
+    return "neutre";
+  }
   return "encours";
+}
+
+/* Liens d'un projet : seuls ceux qui sont renseignés sont affichés. */
+function liensProjet(p: Projet) {
+  const liens = [
+    { libelle: "Code source (GitHub)", url: p.github },
+    { libelle: "Démonstration", url: p.demo },
+    { libelle: "Consulter le projet", url: p.lien },
+    ...(p.liens ?? []),
+  ];
+  return liens.filter((l): l is { libelle: string; url: string } =>
+    Boolean(l.url && l.url.trim() && l.libelle)
+  );
+}
+
+/* Capture d'écran : disparaît d'elle-même si le fichier est introuvable. */
+function Capture({ image }: { image: ImageProjet }) {
+  const [erreur, setErreur] = useState(false);
+  if (!image.src || erreur) return null;
+  return (
+    <figure className="projet__capture">
+      <img
+        src={image.src}
+        alt={image.alt}
+        loading="lazy"
+        decoding="async"
+        onError={() => setErreur(true)}
+      />
+    </figure>
+  );
+}
+
+/* Détails repliables. Tout est optionnel : sans contenu, rien n'est affiché. */
+function DetailsProjet({ p }: { p: Projet }) {
+  const images = (p.images ?? []).filter((i) => i.src);
+  const aDetails =
+    Boolean(p.description?.length) ||
+    Boolean(p.pointsCles?.length) ||
+    Boolean(p.periode) ||
+    Boolean(p.clientName) ||
+    images.length > 0;
+  if (!aDetails) return null;
+  return (
+    <details className="projet__details">
+      <summary>Détails du projet</summary>
+      <div className="projet__details-corps">
+        {p.periode ? (
+          <p className="projet__meta">
+            <span>Période</span> {p.periode}
+          </p>
+        ) : null}
+        {p.clientName ? (
+          <p className="projet__meta">
+            <span>Client</span> {p.clientName}
+          </p>
+        ) : null}
+        {p.description?.map((paragraphe) => (
+          <p key={paragraphe}>{paragraphe}</p>
+        ))}
+        {p.pointsCles?.length ? (
+          <ul className="projet__points" aria-label="Points clés">
+            {p.pointsCles.map((point) => (
+              <li key={point}>{point}</li>
+            ))}
+          </ul>
+        ) : null}
+        {images.length > 0 ? (
+          <div className="projet__captures">
+            {images.map((image) => (
+              <Capture key={image.src} image={image} />
+            ))}
+          </div>
+        ) : null}
+      </div>
+    </details>
+  );
 }
 
 /* Fait apparaître les éléments .apparait lorsqu'ils entrent dans l'écran. */
@@ -149,7 +232,7 @@ export default function Portfolio({ initial }: { initial: Audience }) {
   const sectionActive = useSectionActive(contenu.ordreSections);
 
   const projetsTries = contenu.ordreProjets
-    .map((id) => projets.find((p) => p.id === id))
+    .map((id) => projetsVisibles.find((p) => p.id === id))
     .filter((p): p is Projet => Boolean(p))
     .filter((p) => filtre === "tous" || p.domaine === filtre);
 
@@ -182,35 +265,59 @@ export default function Portfolio({ initial }: { initial: Audience }) {
             </div>
           </div>
           <div className="projets">
-            {projetsTries.map((p, i) => (
-              <article
-                key={p.id}
-                className={`projet apparait projet--${p.domaine}`}
-                style={{ "--delai": `${Math.min(i, 5) * 60}ms` } as React.CSSProperties}
-              >
-                <div className="projet__haut">
-                  <span className={`statut statut--${tonStatut(p.statut)}`}>
-                    {p.statut}
-                  </span>
-                  <span className="projet__domaine">
-                    {libellesDomaines[p.domaine]}
-                  </span>
-                </div>
-                <h3 className="projet__titre">{p.titre}</h3>
-                <p className="projet__categorie">{p.categorie}</p>
-                <p className="projet__resume">{p.resume}</p>
-                <ul className="puces" aria-label="Technologies et sujets">
-                  {p.technologies.map((t) => (
-                    <li key={t}>{t}</li>
-                  ))}
-                </ul>
-                {p.lien ? (
-                  <a className="projet__lien" href={p.lien}>
-                    Consulter le projet <span aria-hidden="true">→</span>
-                  </a>
-                ) : null}
-              </article>
-            ))}
+            {projetsTries.map((p, i) => {
+              const liens = liensProjet(p);
+              return (
+                <article
+                  key={p.id}
+                  className={`projet apparait projet--${p.domaine}`}
+                  style={{ "--delai": `${Math.min(i, 5) * 60}ms` } as React.CSSProperties}
+                >
+                  <div className="projet__haut">
+                    {p.statut ? (
+                      <span className={`statut statut--${tonStatut(p.statut)}`}>
+                        {p.statut}
+                      </span>
+                    ) : null}
+                    <span className="projet__domaine">
+                      {libellesDomaines[p.domaine]}
+                    </span>
+                  </div>
+                  <h3 className="projet__titre">{p.titre}</h3>
+                  <p className="projet__categorie">{p.categorie}</p>
+                  {p.role ? (
+                    <p className="projet__role">
+                      <span>Rôle</span> {p.role}
+                    </p>
+                  ) : null}
+                  <p className="projet__resume">{p.resume}</p>
+                  {p.mention ? <p className="projet__mention">{p.mention}</p> : null}
+                  <ul className="puces" aria-label="Technologies et sujets">
+                    {p.technologies.map((t) => (
+                      <li key={t}>{t}</li>
+                    ))}
+                  </ul>
+                  <DetailsProjet p={p} />
+                  {liens.length > 0 ? (
+                    <ul className="projet__liens" aria-label="Liens du projet">
+                      {liens.map((l) => (
+                        <li key={l.url}>
+                          <a
+                            className="projet__lien"
+                            href={l.url}
+                            {...(/^https?:\/\//.test(l.url)
+                              ? { target: "_blank", rel: "noopener noreferrer" }
+                              : {})}
+                          >
+                            {l.libelle} <span aria-hidden="true">→</span>
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : null}
+                </article>
+              );
+            })}
           </div>
         </div>
       </section>
