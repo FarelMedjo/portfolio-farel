@@ -1,17 +1,18 @@
 import type { Metadata, Viewport } from "next";
+import { langueParDefaut, meta, resoudre } from "@/data/site";
 import "./globals.css";
+
+const base = resoudre(meta, langueParDefaut);
 
 export const metadata: Metadata = {
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"
   ),
-  title: "Farel M | Cybersécurité, investigation numérique et développement web",
-  description:
-    "Portfolio de Farel M, élève ingénieur en cybersécurité et investigation numérique à l'ENSPY (Yaoundé) : projets, services de développement web, parcours et compétences.",
+  title: base.titre,
+  description: base.description,
   openGraph: {
-    title: "Farel M | Cybersécurité, investigation numérique et développement web",
-    description:
-      "Projets, services, parcours et compétences de Farel M, élève ingénieur à l'ENSPY, Yaoundé.",
+    title: base.titre,
+    description: base.descriptionCourte,
     locale: "fr_FR",
     type: "website",
   },
@@ -24,8 +25,9 @@ export const viewport: Viewport = {
   ],
 };
 
-// Applique le thème avant l'affichage pour éviter un flash de la mauvaise couleur.
-const scriptTheme = `document.documentElement.classList.add("js");try{var t=localStorage.getItem("theme");if(!t)t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.dataset.theme=t}catch(e){}`;
+// Applique le thème et la langue avant l'affichage pour éviter un flash
+// de la mauvaise couleur ou un attribut lang erroné.
+const scriptInitial = `document.documentElement.classList.add("js");try{var t=localStorage.getItem("theme");if(!t)t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.dataset.theme=t}catch(e){}try{var p=new URLSearchParams(location.search).get("lang");var c=document.cookie.match(/(?:^|; )langue=(fr|en)/);var l=p==="en"||p==="fr"?p:c&&c[1];if(l)document.documentElement.lang=l}catch(e){}`;
 
 export default function RootLayout({
   children,
@@ -33,9 +35,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="fr" suppressHydrationWarning>
+    <html lang={langueParDefaut} suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: scriptTheme }} />
+        <script dangerouslySetInnerHTML={{ __html: scriptInitial }} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"

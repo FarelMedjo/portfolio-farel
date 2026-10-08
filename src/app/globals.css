@@ -216,6 +216,38 @@ a:hover {
   background: var(--sceau-doux);
 }
 
+.entete__outils {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* Bouton de langue : affiche le code de l'autre langue (FR / EN). */
+.langue {
+  flex: none;
+  display: grid;
+  place-items: center;
+  min-width: 2.4rem;
+  height: 2.4rem;
+  padding-inline: 0.5rem;
+  border: 1px solid var(--filet);
+  border-radius: 999px;
+  background: var(--carte);
+  color: var(--encre);
+  font-family: var(--police-code);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.langue:hover {
+  border-color: var(--sceau);
+  color: var(--sceau);
+}
+
 .theme {
   flex: none;
   display: grid;

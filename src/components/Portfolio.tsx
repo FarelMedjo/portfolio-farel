@@ -1,45 +1,33 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   audiences,
-  chiffres,
-  competences,
-  identite,
+  codesLangues,
+  contenuSite,
   libellesDomaines,
-  libellesSections,
-  parcours,
-  projetsVisibles,
-  services,
   type Audience,
   type Domaine,
-  type ImageProjet,
-  type Projet,
+  type Langue,
+  type ProjetResolu,
   type SectionId,
 } from "@/data/site";
 
 const listeAudiences = Object.keys(audiences) as Audience[];
 const filtres = Object.keys(libellesDomaines) as (Domaine | "tous")[];
 
-/* Couleur du badge de statut selon l'avancement du projet. */
-function tonStatut(statut: string) {
-  if (statut === "Terminé" || statut === "Réalisé") return "ok";
-  if (
-    statut === "Concept" ||
-    statut.startsWith("Projet académique") ||
-    statut === "Projet de conception"
-  ) {
-    return "neutre";
-  }
-  return "encours";
-}
+/* Largeur des étiquettes du terminal, pour aligner les valeurs. */
+const LARGEUR_CLE = 9;
 
 /* Liens d'un projet : seuls ceux qui sont renseignés sont affichés. */
-function liensProjet(p: Projet) {
+function liensProjet(
+  p: ProjetResolu,
+  libelles: { codeSource: string; demonstration: string; consulterProjet: string }
+) {
   const liens = [
-    { libelle: "Code source (GitHub)", url: p.github },
-    { libelle: "Démonstration", url: p.demo },
-    { libelle: "Consulter le projet", url: p.lien },
+    { libelle: libelles.codeSource, url: p.github },
+    { libelle: libelles.demonstration, url: p.demo },
+    { libelle: libelles.consulterProjet, url: p.lien },
     ...(p.liens ?? []),
   ];
   return liens.filter((l): l is { libelle: string; url: string } =>
@@ -48,7 +36,7 @@ function liensProjet(p: Projet) {
 }
 
 /* Capture d'écran : disparaît d'elle-même si le fichier est introuvable. */
-function Capture({ image }: { image: ImageProjet }) {
+function Capture({ image }: { image: { src: string; alt: string } }) {
   const [erreur, setErreur] = useState(false);
   if (!image.src || erreur) return null;
   return (
@@ -65,7 +53,18 @@ function Capture({ image }: { image: ImageProjet }) {
 }
 
 /* Détails repliables. Tout est optionnel : sans contenu, rien n'est affiché. */
-function DetailsProjet({ p }: { p: Projet }) {
+function DetailsProjet({
+  p,
+  ui,
+}: {
+  p: ProjetResolu;
+  ui: {
+    detailsProjet: string;
+    periode: string;
+    client: string;
+    pointsCles: string;
+  };
+}) {
   const images = (p.images ?? []).filter((i) => i.src);
   const aDetails =
     Boolean(p.description?.length) ||
@@ -76,23 +75,23 @@ function DetailsProjet({ p }: { p: Projet }) {
   if (!aDetails) return null;
   return (
     <details className="projet__details">
-      <summary>Détails du projet</summary>
+      <summary>{ui.detailsProjet}</summary>
       <div className="projet__details-corps">
         {p.periode ? (
           <p className="projet__meta">
-            <span>Période</span> {p.periode}
+            <span>{ui.periode}</span> {p.periode}
           </p>
         ) : null}
         {p.clientName ? (
           <p className="projet__meta">
-            <span>Client</span> {p.clientName}
+            <span>{ui.client}</span> {p.clientName}
           </p>
         ) : null}
         {p.description?.map((paragraphe) => (
           <p key={paragraphe}>{paragraphe}</p>
         ))}
         {p.pointsCles?.length ? (
-          <ul className="projet__points" aria-label="Points clés">
+          <ul className="projet__points" aria-label={ui.pointsCles}>
             {p.pointsCles.map((point) => (
               <li key={point}>{point}</li>
             ))}
@@ -166,7 +165,16 @@ function useSectionActive(ids: string[]) {
   return active;
 }
 
-function BoutonTheme() {
+function BoutonTheme({
+  libelles,
+}: {
+  libelles: {
+    themeClair: string;
+    themeSombre: string;
+    themeClairCourt: string;
+    themeSombreCourt: string;
+  };
+}) {
   const [sombre, setSombre] = useState<boolean | null>(null);
 
   useEffect(() => {
@@ -187,8 +195,8 @@ function BoutonTheme() {
       type="button"
       className="theme"
       onClick={basculer}
-      aria-label={sombre ? "Passer au thème clair" : "Passer au thème sombre"}
-      title={sombre ? "Thème clair" : "Thème sombre"}
+      aria-label={sombre ? libelles.themeClair : libelles.themeSombre}
+      title={sombre ? libelles.themeClairCourt : libelles.themeSombreCourt}
     >
       {sombre ? (
         <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -204,11 +212,23 @@ function BoutonTheme() {
   );
 }
 
-export default function Portfolio({ initial }: { initial: Audience }) {
+export default function Portfolio({
+  initial,
+  langueInitiale,
+}: {
+  initial: Audience;
+  langueInitiale: Langue;
+}) {
   const [audience, setAudience] = useState<Audience>(initial);
+  const [langue, setLangue] = useState<Langue>(langueInitiale);
   const [filtre, setFiltre] = useState<Domaine | "tous">("tous");
   const [progression, setProgression] = useState(0);
-  const contenu = audiences[audience];
+
+  /* Contenu résolu une fois par langue : les références restent stables. */
+  const site = useMemo(() => contenuSite(langue), [langue]);
+  const { identite, ui, libellesSections: titresSections } = site;
+  const contenu = site.audiences[audience];
+  const autreLangue: Langue = langue === "fr" ? "en" : "fr";
 
   function choisir(a: Audience) {
     setAudience(a);
@@ -216,6 +236,22 @@ export default function Portfolio({ initial }: { initial: Audience }) {
     url.searchParams.set("profil", a);
     window.history.replaceState(null, "", url);
   }
+
+  function changerLangue() {
+    setLangue(autreLangue);
+    /* Cookie plutôt que localStorage : le serveur rend alors directement
+       la bonne langue lors des visites suivantes, sans affichage transitoire. */
+    document.cookie = `langue=${autreLangue}; path=/; max-age=31536000; samesite=lax`;
+    const url = new URL(window.location.href);
+    url.searchParams.set("lang", autreLangue);
+    window.history.replaceState(null, "", url);
+  }
+
+  /* L'attribut lang et le titre de l'onglet suivent la langue affichée. */
+  useEffect(() => {
+    document.documentElement.lang = langue;
+    document.title = site.meta.titre;
+  }, [langue, site.meta.titre]);
 
   useEffect(() => {
     const surDefilement = () => {
@@ -228,12 +264,12 @@ export default function Portfolio({ initial }: { initial: Audience }) {
     return () => window.removeEventListener("scroll", surDefilement);
   }, []);
 
-  useApparition(audience + filtre);
+  useApparition(audience + filtre + langue);
   const sectionActive = useSectionActive(contenu.ordreSections);
 
   const projetsTries = contenu.ordreProjets
-    .map((id) => projetsVisibles.find((p) => p.id === id))
-    .filter((p): p is Projet => Boolean(p))
+    .map((id) => site.projets.find((p) => p.id === id))
+    .filter((p): p is ProjetResolu => Boolean(p))
     .filter((p) => filtre === "tous" || p.domaine === filtre);
 
   const telephoneBrut = identite.telephone.replace(/\s/g, "");
@@ -246,11 +282,11 @@ export default function Portfolio({ initial }: { initial: Audience }) {
           <div className="section__entete apparait">
             <div>
               <h2 id="t-projets" className="section__titre">
-                Projets
+                {titresSections.projets}
               </h2>
               <p className="section__intro">{contenu.introProjets}</p>
             </div>
-            <div className="filtres" role="group" aria-label="Filtrer les projets">
+            <div className="filtres" role="group" aria-label={ui.filtrerProjets}>
               {filtres.map((f) => (
                 <button
                   key={f}
@@ -259,14 +295,15 @@ export default function Portfolio({ initial }: { initial: Audience }) {
                   aria-pressed={filtre === f}
                   onClick={() => setFiltre(f)}
                 >
-                  {libellesDomaines[f]}
+                  {site.libellesDomaines[f]}
                 </button>
               ))}
             </div>
           </div>
           <div className="projets">
             {projetsTries.map((p, i) => {
-              const liens = liensProjet(p);
+              const liens = liensProjet(p, ui);
+              const statut = p.statut ? site.statuts[p.statut] : null;
               return (
                 <article
                   key={p.id}
@@ -274,32 +311,32 @@ export default function Portfolio({ initial }: { initial: Audience }) {
                   style={{ "--delai": `${Math.min(i, 5) * 60}ms` } as React.CSSProperties}
                 >
                   <div className="projet__haut">
-                    {p.statut ? (
-                      <span className={`statut statut--${tonStatut(p.statut)}`}>
-                        {p.statut}
+                    {statut ? (
+                      <span className={`statut statut--${statut.ton}`}>
+                        {statut.libelle}
                       </span>
                     ) : null}
                     <span className="projet__domaine">
-                      {libellesDomaines[p.domaine]}
+                      {site.libellesDomaines[p.domaine]}
                     </span>
                   </div>
                   <h3 className="projet__titre">{p.titre}</h3>
                   <p className="projet__categorie">{p.categorie}</p>
                   {p.role ? (
                     <p className="projet__role">
-                      <span>Rôle</span> {p.role}
+                      <span>{ui.role}</span> {p.role}
                     </p>
                   ) : null}
                   <p className="projet__resume">{p.resume}</p>
                   {p.mention ? <p className="projet__mention">{p.mention}</p> : null}
-                  <ul className="puces" aria-label="Technologies et sujets">
-                    {p.technologies.map((t) => (
-                      <li key={t}>{t}</li>
+                  <ul className="puces" aria-label={ui.technologies}>
+                    {p.technologies.map((tech) => (
+                      <li key={tech}>{tech}</li>
                     ))}
                   </ul>
-                  <DetailsProjet p={p} />
+                  <DetailsProjet p={p} ui={ui} />
                   {liens.length > 0 ? (
-                    <ul className="projet__liens" aria-label="Liens du projet">
+                    <ul className="projet__liens" aria-label={ui.liensProjet}>
                       {liens.map((l) => (
                         <li key={l.url}>
                           <a
@@ -328,15 +365,12 @@ export default function Portfolio({ initial }: { initial: Audience }) {
         <div className="conteneur">
           <div className="apparait">
             <h2 id="t-services" className="section__titre">
-              Services
+              {titresSections.services}
             </h2>
-            <p className="section__intro">
-              Prestations proposées aux établissements d&apos;enseignement et aux
-              organisations du Cameroun.
-            </p>
+            <p className="section__intro">{ui.servicesIntro}</p>
           </div>
           <ol className="services">
-            {services.map((s, i) => (
+            {site.services.map((s, i) => (
               <li
                 key={s.titre}
                 className="service apparait"
@@ -358,10 +392,10 @@ export default function Portfolio({ initial }: { initial: Audience }) {
       <section id="parcours" className="section" aria-labelledby="t-parcours">
         <div className="conteneur">
           <h2 id="t-parcours" className="section__titre apparait">
-            Parcours
+            {titresSections.parcours}
           </h2>
           <ol className="parcours">
-            {parcours.map((e) => (
+            {site.parcours.map((e) => (
               <li key={e.titre + e.lieu} className="etape apparait">
                 <p className="etape__periode">{e.periode}</p>
                 <h3 className="etape__titre">{e.titre}</h3>
@@ -382,10 +416,10 @@ export default function Portfolio({ initial }: { initial: Audience }) {
       >
         <div className="conteneur">
           <h2 id="t-competences" className="section__titre apparait">
-            Compétences
+            {titresSections.competences}
           </h2>
           <div className="competences">
-            {competences.map((c, i) => (
+            {site.competences.map((c, i) => (
               <div
                 key={c.domaine}
                 className="competence apparait"
@@ -408,11 +442,11 @@ export default function Portfolio({ initial }: { initial: Audience }) {
       <section id="contact" className="section" aria-labelledby="t-contact">
         <div className="conteneur">
           <div className="contact apparait">
-            <p className="contact__surtitre">Contact</p>
+            <p className="contact__surtitre">{ui.contactSurtitre}</p>
             <h2 id="t-contact" className="contact__titre">
-              Un stage, un projet, une question ?
+              {ui.contactTitreLigne1}
               <br />
-              Écrivez-moi directement.
+              {ui.contactTitreLigne2}
             </h2>
             <a className="contact__email" href={`mailto:${identite.email}`}>
               {identite.email}
@@ -426,7 +460,7 @@ export default function Portfolio({ initial }: { initial: Audience }) {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    Écrire sur WhatsApp
+                    {ui.whatsapp}
                   </a>
                 </li>
               ) : null}
@@ -451,7 +485,7 @@ export default function Portfolio({ initial }: { initial: Audience }) {
               ) : null}
               {identite.cvUrl ? (
                 <li>
-                  <a href={identite.cvUrl}>Télécharger le CV</a>
+                  <a href={identite.cvUrl}>{ui.telechargerCv}</a>
                 </li>
               ) : null}
               <li>{identite.localisation}</li>
@@ -465,7 +499,7 @@ export default function Portfolio({ initial }: { initial: Audience }) {
   return (
     <>
       <a className="lien-evitement" href="#contenu">
-        Aller au contenu
+        {ui.allerAuContenu}
       </a>
 
       <div
@@ -482,18 +516,30 @@ export default function Portfolio({ initial }: { initial: Audience }) {
             </span>
             {identite.nom}
           </a>
-          <nav aria-label="Sections du portfolio" className="entete__nav">
+          <nav aria-label={ui.navAria} className="entete__nav">
             {contenu.ordreSections.map((id) => (
               <a
                 key={id}
                 href={`#${id}`}
                 aria-current={sectionActive === id ? "true" : undefined}
               >
-                {libellesSections[id]}
+                {titresSections[id]}
               </a>
             ))}
           </nav>
-          <BoutonTheme />
+          <div className="entete__outils" role="group" aria-label={ui.langueAria}>
+            <button
+              type="button"
+              className="langue"
+              onClick={changerLangue}
+              aria-label={ui.changerLangue}
+              title={ui.changerLangue}
+              lang={autreLangue}
+            >
+              {codesLangues[autreLangue]}
+            </button>
+            <BoutonTheme libelles={ui} />
+          </div>
         </div>
       </header>
 
@@ -524,19 +570,36 @@ export default function Portfolio({ initial }: { initial: Audience }) {
                 <span className="t-invite">$</span> whoami{"\n"}
                 <span className="t-sortie">{identite.nomComplet}</span>
                 {"\n\n"}
-                <span className="t-invite">$</span> cat profil.txt{"\n"}
-                <span className="t-cle">école    </span> ENSPY, Yaoundé{"\n"}
-                <span className="t-cle">filière  </span> Cybersécurité et investigation numérique{"\n"}
-                <span className="t-cle">niveau   </span> 5e année{"\n"}
-                <span className="t-cle">studio   </span> ALBEDO Studio{"\n\n"}
+                <span className="t-invite">$</span> cat {ui.terminal.fichierProfil}
+                {"\n"}
+                <span className="t-cle">
+                  {ui.terminal.ecole.padEnd(LARGEUR_CLE)}
+                </span>{" "}
+                {ui.terminal.ecoleValeur}
+                {"\n"}
+                <span className="t-cle">
+                  {ui.terminal.filiere.padEnd(LARGEUR_CLE)}
+                </span>{" "}
+                {ui.terminal.filiereValeur}
+                {"\n"}
+                <span className="t-cle">
+                  {ui.terminal.niveau.padEnd(LARGEUR_CLE)}
+                </span>{" "}
+                {ui.terminal.niveauValeur}
+                {"\n"}
+                <span className="t-cle">
+                  {ui.terminal.studio.padEnd(LARGEUR_CLE)}
+                </span>{" "}
+                {ui.terminal.studioValeur}
+                {"\n\n"}
                 <span className="t-invite">$</span> <span className="curseur" />
               </pre>
             </div>
           </div>
 
           <div className="conteneur">
-            <div className="choix" role="group" aria-label="Vous êtes">
-              <span className="choix__label">Vous êtes</span>
+            <div className="choix" role="group" aria-label={ui.vousEtes}>
+              <span className="choix__label">{ui.vousEtes}</span>
               {listeAudiences.map((a) => (
                 <button
                   key={a}
@@ -545,7 +608,7 @@ export default function Portfolio({ initial }: { initial: Audience }) {
                   aria-pressed={audience === a}
                   onClick={() => choisir(a)}
                 >
-                  {audiences[a].libelle}
+                  {site.audiences[a].libelle}
                 </button>
               ))}
             </div>
@@ -559,18 +622,18 @@ export default function Portfolio({ initial }: { initial: Audience }) {
                 </a>
                 {identite.cvUrl ? (
                   <a className="bouton bouton--contour" href={identite.cvUrl}>
-                    Télécharger le CV
+                    {ui.telechargerCv}
                   </a>
                 ) : (
                   <a className="bouton bouton--contour" href="#projets">
-                    Voir les projets
+                    {ui.voirProjets}
                   </a>
                 )}
               </p>
             </div>
 
             <dl className="chiffres">
-              {chiffres.map((c) => (
+              {site.chiffres.map((c) => (
                 <div key={c.libelle} className="chiffre">
                   <dt>{c.libelle}</dt>
                   <dd>{c.valeur}</dd>
@@ -590,7 +653,7 @@ export default function Portfolio({ initial }: { initial: Audience }) {
           <p>
             © {annee} {identite.nomComplet}. {identite.localisation}.
           </p>
-          <a href="#accueil">Retour en haut ↑</a>
+          <a href="#accueil">{ui.retourEnHaut}</a>
         </div>
       </footer>
     </>
